@@ -1,0 +1,10 @@
+#Redirect / /archive/test
+
+RewriteEngine on
+#RewriteRule ^index\.html$ archive/test/index.html
+
+RewriteCond /var/www/cnr.lwlss/archive/%{REQUEST_FILENAME} -f 
+RewriteRule ^(.+) /var/www/cnr.lwlss/archive/$1 [L]
+RewriteRule ^(.+) - [PT]
+
+

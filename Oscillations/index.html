@@ -1,0 +1,164 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+<head><title>Oscillations</title>
+<meta charset="utf-8">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+<body><header><h1>Oscillations</h1><time datetime="2011-08-31T11:13:00Z">11:13 Wednesday 31st August 2011</time></header><article>Last week a colleague asked for advice on how to estimate the frequency and amplitude of an oscillating signal.  My initial response was to suggest reading the data into <a href="http://www.r-project.org/">R</a>, using the <a href="http://stat.ethz.ch/R-manual/R-devel/library/stats/html/spectrum.html">spectrum</a> function to estimate the spectral density of the time series, taking the maximum as a good initial guess for the frequency of oscillation and using that initial guess to fit a <a href="http://en.wikipedia.org/wiki/Sine_wave">sinusoid</a> model to the data by <a href="http://en.wikipedia.org/wiki/Least_squares">least squares</a>.  I suggested trying to fit the rather gruesome "monthly deaths from bronchitis, emphysema and asthma in the UK, 1974–1979" dataset <a href="http://stat.ethz.ch/R-manual/R-patched/library/datasets/html/UKLungDeaths.html">ldeaths</a> which is embedded in <a href="http://www.r-project.org/">R</a>, and referred to as an example in the <a href="http://stat.ethz.ch/R-manual/R-devel/library/stats/html/spectrum.html">spectrum</a> documentation.
+<br/>
+<br/>On reflection, I think that this was a terrible example to give, since the <a href="http://stat.ethz.ch/R-manual/R-patched/library/datasets/html/UKLungDeaths.html">ldeaths</a> time-series is nice and regular.  One thing I've learned from 10 years of working with biological data is that they are almost never regular or well-behaved.  Therefore analysing this dataset is likely to be misleading.  Many statistical tools assume regular datasets.
+<br/>
+<br/>The alternative, more realistic example <a href="http://www.r-project.org/">R</a> workflow I now recommend (including the generation of a realistic, synthetic, example dataset) can be seen at the bottom of this post.  Here is an example output:
+<br/>
+<br/><img alt="Oscillating dataset and fitted models" src="http://lwlss.net/Oscillations2.png">
+<br/>
+<br/>While writing this, I remembered that way back in 2000 I ran a <a href="http://web.archive.org/web/20030219080303/http://www.mathematic.co.uk/examples.htm">website</a> which described solving <a href="http://web.archive.org/web/20030223012343/http://www.mathematic.co.uk/examples/SineCurves.htm">this very problem</a> as an example of using the <a href="http://en.wikipedia.org/wiki/Newton's_method">Newton-Rhapson</a> method for multi-dimensional optimisation.  The tools I used then are different, but the two main principles are the same: 1) fit a model to the data for a robust estimate of frequency &amp; amplitude and 2) take care to generate good initial guesses for parameter values if you want a sensible fit.
+<br/>
+<br/>If we wanted to test for the significance of differences between frequency estimates generated from different datasets, without multiple experimental repeats, the problem becomes more interesting.  In that case I would recommend using <a href="http://calvin.iarc.fr/~martyn/software/jags/">JAGS</a> and <a href="http://cran.r-project.org/web/packages/rjags/index.html">rjags</a> to infer distributed parameter values for the same model (with an added error model).
+<br/>
+<br/><!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+<br/> 2
+<br/> 3
+<br/> 4
+<br/> 5
+<br/> 6
+<br/> 7
+<br/> 8
+<br/> 9
+<br/>10
+<br/>11
+<br/>12
+<br/>13
+<br/>14
+<br/>15
+<br/>16
+<br/>17
+<br/>18
+<br/>19
+<br/>20
+<br/>21
+<br/>22
+<br/>23
+<br/>24
+<br/>25
+<br/>26
+<br/>27
+<br/>28
+<br/>29
+<br/>30
+<br/>31
+<br/>32
+<br/>33
+<br/>34
+<br/>35
+<br/>36
+<br/>37
+<br/>38
+<br/>39
+<br/>40
+<br/>41
+<br/>42
+<br/>43
+<br/>44
+<br/>45
+<br/>46
+<br/>47
+<br/>48
+<br/>49
+<br/>50
+<br/>51
+<br/>52
+<br/>53
+<br/>54
+<br/>55
+<br/>56
+<br/>57
+<br/>58
+<br/>59
+<br/>60
+<br/>61
+<br/>62
+<br/>63
+<br/>64
+<br/>65
+<br/>66
+<br/>67
+<br/>68
+<br/>69</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">############################</span>
+<br/><span style="color: #408080; font-style: italic"># Generate best estimate for frequency and amplitude given irregular timeseries</span>
+<br/><span style="color: #408080; font-style: italic"># displaying oscillations by fitting a sinusoidal model.</span>
+<br/><span style="color: #408080; font-style: italic">############################</span>
+<br/>
+<br/><span style="color: #408080; font-style: italic">### Define sinusoid model</span>
+<br/>mod<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">function</span>(A,f,c,p,t) A<span style="color: #666666">*</span>sin(<span style="color: #666666">2*</span>pi<span style="color: #666666">*</span>f<span style="color: #666666">*</span>t<span style="color: #666666">+</span>p)<span style="color: #666666">+</span>c
+<br/>
+<br/><span style="color: #408080; font-style: italic">### Use model to generate a synthetic irregular time-series (with noise)</span>
+<br/><span style="color: #408080; font-style: italic">### For a real problem, replace this section with actual data!</span>
+<br/><span style="color: #408080; font-style: italic"># True paramter values</span>
+<br/>Atrue<span style="color: #666666">=5</span>; ftrue<span style="color: #666666">=1/30</span>; ctrue<span style="color: #666666">=20</span>; ptrue<span style="color: #666666">=0</span>
+<br/><span style="color: #408080; font-style: italic"># Random simulation of irregular observation schedule</span>
+<br/>expt<span style="color: #666666">=</span>sort(sample(<span style="color: #666666">0</span>:<span style="color: #666666">100</span>,<span style="color: #666666">50</span>,replace<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">FALSE</span>))
+<br/><span style="color: #408080; font-style: italic"># Generate realistic dataset (irregular observation times and observations with error)</span>
+<br/>df<span style="color: #666666">=</span>data.frame(time<span style="color: #666666">=</span>expt,obs<span style="color: #666666">=</span>mod(Atrue,ftrue,ctrue,ptrue,expt)<span style="color: #666666">+</span>rnorm(length(expt),mean<span style="color: #666666">=1</span>,sd<span style="color: #666666">=2</span>))
+<br/>
+<br/><span style="color: #408080; font-style: italic">### Estimate frequency of data by simulating a regular time-series</span>
+<br/><span style="color: #408080; font-style: italic"># Construct interpolating function for observed data</span>
+<br/>intf<span style="color: #666666">=</span>approxfun(df$time,df$obs)
+<br/><span style="color: #408080; font-style: italic"># Simulate a regular measurement frequency</span>
+<br/>mfreq<span style="color: #666666">=2</span>
+<br/><span style="color: #408080; font-style: italic"># Create regularly spaced time-series</span>
+<br/>regtimes<span style="color: #666666">=</span>min(df$time)<span style="color: #666666">+</span>mfreq<span style="color: #666666">*</span>(<span style="color: #666666">0</span>:((max(df$time)<span style="color: #666666">-</span>min(df$time))<span style="color: #666666">/</span>mfreq))
+<br/>regobs<span style="color: #666666">=</span>intf(regtimes)
+<br/><span style="color: #408080; font-style: italic"># Generate and plot frequency spectrum for regular time-series</span>
+<br/>spec<span style="color: #666666">=</span>spectrum(regobs,plot<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">TRUE</span>)
+<br/><span style="color: #408080; font-style: italic"># Extract the fundamental frequency</span>
+<br/>fguess<span style="color: #666666">=</span>spec$freq[which.max(spec$spec)]
+<br/><span style="color: #408080; font-style: italic"># Convert units from measurent frequency original units</span>
+<br/>fguess<span style="color: #666666">=</span>fguess<span style="color: #666666">/</span>mfreq
+<br/>
+<br/><span style="color: #408080; font-style: italic">### Estimate other paramters</span>
+<br/><span style="color: #408080; font-style: italic"># Estimate amplitude as half range of observations</span>
+<br/>Aguess<span style="color: #666666">=</span>(max(df$obs)<span style="color: #666666">-</span>min(df$obs))<span style="color: #666666">/2</span>
+<br/><span style="color: #408080; font-style: italic"># Estimate offset as mean of observations</span>
+<br/>cguess<span style="color: #666666">=</span>mean(df$obs)
+<br/><span style="color: #408080; font-style: italic"># Estimate the phase as </span>
+<br/>pguess<span style="color: #666666">=</span>asin((df$obs[<span style="color: #666666">1</span>]<span style="color: #666666">-</span>cguess)<span style="color: #666666">/</span>Aguess)<span style="color: #666666">-2*</span>pi<span style="color: #666666">*</span>fguess<span style="color: #666666">*</span>df$time[<span style="color: #666666">1</span>]
+<br/>
+<br/><span style="color: #408080; font-style: italic">### Fit model to data</span>
+<br/><span style="color: #408080; font-style: italic"># Objective function (sum of squared difference between model and observations)</span>
+<br/>obj<span style="color: #666666">&lt;-</span><span style="color: #008000; font-weight: bold">function</span>(z){
+<br/>	A<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>]; f<span style="color: #666666">=</span>z[<span style="color: #666666">2</span>]; c<span style="color: #666666">=</span>z[<span style="color: #666666">3</span>]; p<span style="color: #666666">=</span>z[<span style="color: #666666">4</span>];
+<br/>	<span style="color: #008000; font-weight: bold">return</span>(sum((mod(A,f,c,p,df$time)<span style="color: #666666">-</span>df$obs)<span style="color: #666666">**2</span>))
+<br/>}
+<br/><span style="color: #408080; font-style: italic"># Optimisation</span>
+<br/><span style="color: #408080; font-style: italic"># Approximate sampling frequency (to avoid Nyquist limit)</span>
+<br/>sfreqest<span style="color: #666666">=</span>length(df$time)<span style="color: #666666">/</span>max(df$time)
+<br/>lowerlim<span style="color: #666666">=</span>c(<span style="color: #666666">0</span>,<span style="color: #666666">0</span>,<span style="color: #666666">-</span>Inf,<span style="color: #666666">0</span>)
+<br/>upperlim<span style="color: #666666">=</span>c(Inf,<span style="color: #666666">2*</span>sfreqest,Inf,<span style="color: #666666">2*</span>pi)
+<br/>params<span style="color: #666666">=</span>optim(c(Aguess,fguess,cguess,pguess),obj,lower<span style="color: #666666">=</span>lowerlim,upper<span style="color: #666666">=</span>upperlim,method<span style="color: #666666">=</span><span style="color: #BA2121">&quot;L-BFGS-B&quot;</span>,control<span style="color: #666666">=</span>list(maxit<span style="color: #666666">=10000</span>))$par
+<br/>Aopt<span style="color: #666666">=</span>params[<span style="color: #666666">1</span>]; fopt<span style="color: #666666">=</span>params[<span style="color: #666666">2</span>]; copt<span style="color: #666666">=</span>params[<span style="color: #666666">3</span>]; popt<span style="color: #666666">=</span>params[<span style="color: #666666">4</span>]
+<br/>Apercent<span style="color: #666666">=100*</span>(Atrue<span style="color: #666666">-</span>Aopt)<span style="color: #666666">/</span>Atrue; fpercent<span style="color: #666666">=100*</span>(ftrue<span style="color: #666666">-</span>fopt)<span style="color: #666666">/</span>ftrue; cpercent<span style="color: #666666">=100*</span>(ctrue<span style="color: #666666">-</span>copt)<span style="color: #666666">/</span>ctrue; ppercent<span style="color: #666666">=100*</span>(ptrue<span style="color: #666666">-</span>popt)<span style="color: #666666">/</span>(<span style="color: #666666">2*</span>pi)
+<br/>report<span style="color: #666666">=</span>paste(<span style="color: #BA2121">&quot;% Diffs: A:&quot;</span>,signif(Apercent,<span style="color: #666666">3</span>),<span style="color: #BA2121">&quot;f:&quot;</span>,signif(fpercent,<span style="color: #666666">3</span>),<span style="color: #BA2121">&quot;c:&quot;</span>,signif(cpercent,<span style="color: #666666">3</span>),<span style="color: #BA2121">&quot;p:&quot;</span>,signif(ppercent,<span style="color: #666666">3</span>))
+<br/>
+<br/><span style="color: #408080; font-style: italic"># Inspect goodness of fit</span>
+<br/><span style="color: #408080; font-style: italic">#pdf(&quot;Oscillations.pdf&quot;,width=8,height=8)</span>
+<br/>	plot(<span style="color: #008000; font-weight: bold">NULL</span>,,xlim<span style="color: #666666">=</span>c(min(df$time),max(df$time)),ylim<span style="color: #666666">=</span>c(<span style="color: #666666">0.9*</span>min(df$obs),<span style="color: #666666">1.2*</span>max(df$obs)),type<span style="color: #666666">=</span><span style="color: #BA2121">&quot;n&quot;</span>,xlab<span style="color: #666666">=</span><span style="color: #BA2121">&quot;time&quot;</span>,ylab<span style="color: #666666">=</span><span style="color: #BA2121">&quot;value&quot;</span>,main<span style="color: #666666">=</span>report,cex.lab<span style="color: #666666">=2</span>,cex.axis<span style="color: #666666">=2</span>)
+<br/>	curve(mod(Aguess,fguess,cguess,pguess,x),min(df$time),max(df$time),add<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">TRUE</span>,col<span style="color: #666666">=</span><span style="color: #BA2121">&quot;red&quot;</span>,lwd<span style="color: #666666">=3</span>,,n<span style="color: #666666">=1001</span>)
+<br/>	curve(mod(Aopt,fopt,copt,popt,x),min(df$time),max(df$time),add<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">TRUE</span>,col<span style="color: #666666">=</span><span style="color: #BA2121">&quot;blue&quot;</span>,lwd<span style="color: #666666">=3</span>,n<span style="color: #666666">=1001</span>)
+<br/>	curve(mod(Atrue,ftrue,ctrue,ptrue,x),min(df$time),max(df$time),add<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">TRUE</span>,col<span style="color: #666666">=</span><span style="color: #BA2121">&quot;green&quot;</span>,lwd<span style="color: #666666">=3</span>,n<span style="color: #666666">=1001</span>)
+<br/>	points(df$time,df$obs,type<span style="color: #666666">=</span><span style="color: #BA2121">&quot;b&quot;</span>,lwd<span style="color: #666666">=3</span>)
+<br/>	legend(<span style="color: #BA2121">&quot;topright&quot;</span>,c(<span style="color: #BA2121">&quot;Truth&quot;</span>,<span style="color: #BA2121">&quot;Guess&quot;</span>,<span style="color: #BA2121">&quot;Optimised&quot;</span>,<span style="color: #BA2121">&quot;Observed&quot;</span>),lwd<span style="color: #666666">=3</span>,col<span style="color: #666666">=</span>c(<span style="color: #BA2121">&quot;green&quot;</span>,<span style="color: #BA2121">&quot;red&quot;</span>,<span style="color: #BA2121">&quot;blue&quot;</span>,<span style="color: #BA2121">&quot;black&quot;</span>))
+<br/><span style="color: #408080; font-style: italic">#dev.off()</span>
+<br/><span style="color: #408080; font-style: italic"># Generate a small report</span>
+<br/>res<span style="color: #666666">=</span>data.frame(A<span style="color: #666666">=</span>c(Atrue,Aguess,Aopt),f<span style="color: #666666">=</span>c(ftrue,fguess,fopt),c<span style="color: #666666">=</span>c(ctrue,cguess,copt),p<span style="color: #666666">=</span>c(ptrue,pguess,popt))
+<br/>rownames(res)<span style="color: #666666">=</span>c(<span style="color: #BA2121">&quot;Truth&quot;</span>,<span style="color: #BA2121">&quot;Guess&quot;</span>,<span style="color: #BA2121">&quot;Optimised&quot;</span>)
+<br/>print(res)
+<br/></pre></td></tr></table></div>
+<br/>
+<br/>
+<br/></img></article></body>
+</html>

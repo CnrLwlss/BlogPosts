@@ -1,0 +1,137 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+<head><title>Rasterizing Archimedes Spirals</title>
+<meta charset="utf-8">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+<body><header><h1>Rasterizing Archimedes Spirals</h1><time datetime="2009-11-14T23:19:00Z">23:19 Saturday 14th November 2009</time></header><article>Imagine you want a list of coordinates, following a spiral, on a discrete, regular grid.  I can think of several examples where this could be useful for digital image construction, where the regular grid corresponds to pixel coordinates (integer only).  It's easy to code up a square spiral like <a href="http://en.wikipedia.org/wiki/Ulam_spiral">Ulam's spiral</a>, since pixels are naturally arrayed on a rectangular grid, but using square spirals in image construction leaves obvious square corners.  A circular spiral can be smoother and better.  
+<br/>
+<br/>Let's look at the <a href="http://en.wikipedia.org/wiki/Archimedean_spiral">Archimedes spiral</a> in polar coordinates:
+<br/>
+<br/><a href="http://www.codecogs.com/eqnedit.php?latex=r(\theta)=a@plus;b\theta" target="_blank"><img src="http://latex.codecogs.com/gif.latex?r(\theta)=a+b\theta" title="r(\theta)=a+b\theta"/></a>
+<br/>
+<br/>If we choose a = 0 and select b so that:
+<br/>
+<br/><a href="http://www.codecogs.com/eqnedit.php?latex=r(2\pi)-r(0)=\alpha" target="_blank"><img src="http://latex.codecogs.com/gif.latex?r(2\pi)-r(0)=\alpha" title="r(2\pi)-r(0)=\alpha"/></a>
+<br/>
+<br/>we can write the equations describing the spiral in Cartesian coordinates, in terms of <a href="http://www.codecogs.com/eqnedit.php?latex=\inline \alpha" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\inline \alpha" title="\inline \alpha"/></a>, the distance between spiral loops:
+<br/>
+<br/><a href="http://www.codecogs.com/eqnedit.php?latex=x(\theta)=\frac{\alpha\theta}{2\pi}Cos(\theta)" target="_blank"><img src="http://latex.codecogs.com/gif.latex?x(\theta)=\frac{\alpha\theta}{2\pi}\cos(\theta)" title="x(\theta)=\frac{\alpha\theta}{2\pi}\cos(\theta)"/></a>
+<br/>
+<br/><a href="http://www.codecogs.com/eqnedit.php?latex=y(\theta)=\frac{\alpha\theta}{2\pi}Sin(\theta)" target="_blank"><img src="http://latex.codecogs.com/gif.latex?y(\theta)=\frac{\alpha\theta}{2\pi}\sin(\theta)" title="y(\theta)=\frac{\alpha\theta}{2\pi}\sin(\theta)"/></a>
+<br/>
+<br/>To get an approximation of this smooth curve on a regular grid, we can think about trying to move along it in jumps of constant length <a href="http://www.codecogs.com/eqnedit.php?latex=\inline \omega" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\inline \omega" title="\inline \omega"/></a>, where the jump size is achieved by selecting a change in angle <a href="http://www.codecogs.com/eqnedit.php?latex=\inline \delta" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\inline \delta" title="\inline \delta"/></a>.  Computing the distance between one point and the next we can write down this expression:
+<br/>
+<br/><a href="http://www.codecogs.com/eqnedit.php?latex=\80dpi \inline \omega={\sqrt{{\left( \frac{-\left( \alpha \,\theta \,\cos (\theta ) \right) }{2\,\pi } @plus; \frac{\alpha \,\left( \delta @plus; \theta \right) \,\cos (\delta @plus; \theta )}{2\,\pi } \right) }^2 @plus;{\left( \frac{-\left( \alpha \,\theta \,\sin (\theta ) \right) }{2\,\pi } @plus; \frac{\alpha \,\left( \delta @plus; \theta \right) \,\sin (\delta @plus; \theta )}{2\,\pi } \right) }^2}}" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\80dpi \inline \omega={\sqrt{{\left( \frac{-\left( \alpha \,\theta \,\cos (\theta ) \right) }{2\,\pi } + \frac{\alpha \,\left( \delta + \theta \right) \,\cos (\delta + \theta )}{2\,\pi } \right) }^2 +{\left( \frac{-\left( \alpha \,\theta \,\sin (\theta ) \right) }{2\,\pi } + \frac{\alpha \,\left( \delta + \theta \right) \,\sin (\delta + \theta )}{2\,\pi } \right) }^2}}" title="\80dpi \inline \omega={\sqrt{{\left( \frac{-\left( \alpha \,\theta \,\cos (\theta ) \right) }{2\,\pi } + \frac{\alpha \,\left( \delta + \theta \right) \,\cos (\delta + \theta )}{2\,\pi } \right) }^2 +{\left( \frac{-\left( \alpha \,\theta \,\sin (\theta ) \right) }{2\,\pi } + \frac{\alpha \,\left( \delta + \theta \right) \,\sin (\delta + \theta )}{2\,\pi } \right) }^2}}"/></a>
+<br/>
+<br/>We can rearrange this expression into something simpler:
+<br/>
+<br/><a href="http://www.codecogs.com/eqnedit.php?latex=\omega=\frac{{\sqrt{{\alpha }^2\,\left( {\delta }^2 @plus; 2\,\delta \,\theta @plus; 2\,{\theta }^2 - 2\,\theta \,\left( \delta @plus; \theta \right) \,\cos (\delta ) \right) }}}{2\,\pi }" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\omega=\frac{{\sqrt{{\alpha }^2\,\left( {\delta }^2 + 2\,\delta \,\theta + 2\,{\theta }^2 - 2\,\theta \,\left( \delta + \theta \right) \,\cos (\delta ) \right) }}}{2\,\pi }" title="\omega=\frac{{\sqrt{{\alpha }^2\,\left( {\delta }^2 + 2\,\delta \,\theta + 2\,{\theta }^2 - 2\,\theta \,\left( \delta + \theta \right) \,\cos (\delta ) \right) }}}{2\,\pi }"/></a>
+<br/>
+<br/>It would be nice to solve this for <a href="http://www.codecogs.com/eqnedit.php?latex=\inline \delta" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\inline \delta" title="\inline \delta"/></a>, then we would know how big an angle we need to jump to move exactly <a href="http://www.codecogs.com/eqnedit.php?latex=\inline \omega" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\inline \omega" title="\inline \omega"/></a> at a given time.  Remember that as the radius gets bigger, the angle required to achieve a given displacement decreases.  Unfortunately, I can't solve it analytically, due to the presence of the cosine term, however we can approximate cos(<a href="http://www.codecogs.com/eqnedit.php?latex=\inline \theta" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\inline \theta" title="\inline \theta"/></a>) with the Taylor Series expansion up to 3rd order, giving us this expression:
+<br/>
+<br/><a href="http://www.codecogs.com/eqnedit.php?latex=\omega= \frac{{\sqrt{{\alpha }^2\,\left( 1 @plus; {\theta }^2 \right) }}\,\delta }{2\,\pi } @plus; {\Mfunction{O}(\delta )}^2" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\omega= \frac{{\sqrt{{\alpha }^2\,\left( 1 + {\theta }^2 \right) }}\,\delta }{2\,\pi } + {\Mfunction{O}(\delta )}^2" title="\omega= \frac{{\sqrt{{\alpha }^2\,\left( 1 + {\theta }^2 \right) }}\,\delta }{2\,\pi } + {\Mfunction{O}(\delta )}^2"/></a>
+<br/>
+<br/>This can easily be solved for small values of <a href="http://www.codecogs.com/eqnedit.php?latex=\inline \delta" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\inline \delta" title="\inline \delta"/></a>.  If we define the perpendicular distance between pixel centres as 1, we know that the maximum distance between any two adjacent pixels is 1/<a href="http://www.codecogs.com/eqnedit.php?latex=\inline \sqrt{2}" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\inline \sqrt{2}" title="\inline \sqrt{2}"/></a>.  Therefore if we choose our parameters like this:
+<br/>
+<br/><a href="http://www.codecogs.com/eqnedit.php?latex=\omega=\alpha=\frac{1}{\sqrt{2}}" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\omega=\alpha=\frac{1}{\sqrt{2}}" title="\omega=\alpha=\frac{1}{\sqrt{2}}"/></a>
+<br/>
+<br/>we would expect to move along the spiral, moving close to every pixel at least once.  If we continue to step along the spiral like this indefinitely, and round every coordinate to the nearest integer value, we should hit every pixel in Archimedes spiral order!
+<br/>
+<br/>This diagram shows the result of applying this algorithm:
+<br/>
+<br/><a href="http://www.flickr.com/photos/conchur/4104082404/" title="Rasterizing Archimedes Spiral by Conor Lawless, on Flickr"><img alt="Rasterizing Archimedes Spiral" height="500" src="http://farm3.static.flickr.com/2777/4104082404_6ae7515c24.jpg" width="500"/></a>
+<br/>
+<br/>The blue curve is a continuous Archimedes spiral, the numbered red points are the pixel approximations of the continuous curve and the red lines demonstrate the actual path taken between unique, discrete approximation points.
+<br/>
+<br/>Below is a demonstration of what this sort of thing can look like.  In this case I sorted the pixels of an original image by intensity and re-drew them along the approximate pixellated Archimedes spiral path:
+<br/>
+<br/><a href="http://www.flickr.com/photos/conchur/4103425349/" title="Archimedes Spiral by Conor Lawless, on Flickr"><img alt="Archimedes Spiral" height="381" src="http://farm3.static.flickr.com/2751/4103425349_98d1c93a76.jpg" width="500"/></a>
+<br/>
+<br/>The original image is here:
+<br/>
+<br/><a href="http://www.flickr.com/photos/conchur/203775481/" title="YellowCandleHolder by Conor Lawless, on Flickr"><img alt="YellowCandleHolder" height="381" src="http://farm1.static.flickr.com/64/203775481_26522c9099.jpg" width="500"/></a>
+<br/>
+<br/>I've written some python code to generate these rasterized pixel spirals.  You specify an image size (rectangle) and the coordinates of the spiral focus, and it generates a unique list of points lying inside that rectangle, in spiral order (as in the diagram above).  It's quite fast, it can generate enough points to fill a 6 megapixel image in a couple of minutes.
+<br/><pre><font face="Lucida,Courier New"><font color="#C00000">from</font> <font color="#000000">math</font> <font color="#C00000">import</font> <font color="#0000C0">*</font>
+<br/> 
+<br/><font color="#C00000">def</font> <font color="#000000">uniquer</font><font color="#0000C0">(</font><font color="#000000">seq</font><font color="#0000C0">,</font> <font color="#000000">idfun</font><font color="#0000C0">=</font><font color="#000000">None</font><font color="#0000C0">)</font><font color="#0000C0">:</font> <font color="#008000"># http://code.activestate.com/recipes/52560/</font>
+<br/>    <font color="#008000"># Generates a unique list of elements from seq
+<br/></font>    <font color="#008000"># maintaining their original order
+<br/></font>    <font color="#C00000">if</font> <font color="#000000">idfun</font> <font color="#C00000">is</font> <font color="#000000">None</font><font color="#0000C0">:</font>
+<br/>        <font color="#C00000">def</font> <font color="#000000">idfun</font><font color="#0000C0">(</font><font color="#000000">x</font><font color="#0000C0">)</font><font color="#0000C0">:</font> <font color="#C00000">return</font> <font color="#000000">x</font>
+<br/>    <font color="#000000">seen</font> <font color="#0000C0">=</font> <font color="#0000C0">{</font><font color="#0000C0">}</font>
+<br/>    <font color="#000000">result</font> <font color="#0000C0">=</font> <font color="#0000C0">[</font><font color="#0000C0">]</font>
+<br/>    <font color="#C00000">for</font> <font color="#000000">item</font> <font color="#C00000">in</font> <font color="#000000">seq</font><font color="#0000C0">:</font>
+<br/>        <font color="#000000">marker</font> <font color="#0000C0">=</font> <font color="#000000">idfun</font><font color="#0000C0">(</font><font color="#000000">item</font><font color="#0000C0">)</font>
+<br/>        <font color="#C00000">if</font> <font color="#000000">marker</font> <font color="#C00000">in</font> <font color="#000000">seen</font><font color="#0000C0">:</font> <font color="#C00000">continue</font>
+<br/>        <font color="#000000">seen</font><font color="#0000C0">[</font><font color="#000000">marker</font><font color="#0000C0">]</font> <font color="#0000C0">=</font> <font color="#0080C0">1</font>
+<br/>        <font color="#000000">result</font><font color="#0000C0">.</font><font color="#000000">append</font><font color="#0000C0">(</font><font color="#000000">item</font><font color="#0000C0">)</font>
+<br/>    <font color="#C00000">return</font> <font color="#000000">result</font>
+<br/> 
+<br/><font color="#C00000">def</font> <font color="#000000">x</font><font color="#0000C0">(</font><font color="#000000">theta</font><font color="#0000C0">,</font><font color="#000000">alpha</font><font color="#0000C0">)</font><font color="#0000C0">:</font>
+<br/>    <font color="#C00000">return</font> <font color="#000000">int</font><font color="#0000C0">(</font><font color="#000000">round</font><font color="#0000C0">(</font><font color="#000000">alpha</font><font color="#0000C0">*</font><font color="#000000">theta</font><font color="#0000C0">*</font><font color="#000000">cos</font><font color="#0000C0">(</font><font color="#000000">theta</font><font color="#0000C0">)</font><font color="#0000C0">/</font><font color="#0000C0">(</font><font color="#0080C0">2</font><font color="#0000C0">*</font><font color="#000000">pi</font><font color="#0000C0">)</font><font color="#0000C0">)</font><font color="#0000C0">)</font>
+<br/> 
+<br/><font color="#C00000">def</font> <font color="#000000">y</font><font color="#0000C0">(</font><font color="#000000">theta</font><font color="#0000C0">,</font><font color="#000000">alpha</font><font color="#0000C0">)</font><font color="#0000C0">:</font>
+<br/>    <font color="#C00000">return</font> <font color="#000000">int</font><font color="#0000C0">(</font><font color="#000000">round</font><font color="#0000C0">(</font><font color="#000000">alpha</font><font color="#0000C0">*</font><font color="#000000">theta</font><font color="#0000C0">*</font><font color="#000000">sin</font><font color="#0000C0">(</font><font color="#000000">theta</font><font color="#0000C0">)</font><font color="#0000C0">/</font><font color="#0000C0">(</font><font color="#0080C0">2</font><font color="#0000C0">*</font><font color="#000000">pi</font><font color="#0000C0">)</font><font color="#0000C0">)</font><font color="#0000C0">)</font>
+<br/> 
+<br/><font color="#C00000">def</font> <font color="#000000">delta</font><font color="#0000C0">(</font><font color="#000000">alpha</font><font color="#0000C0">,</font> <font color="#000000">theta</font><font color="#0000C0">,</font> <font color="#000000">omega</font><font color="#0000C0">)</font><font color="#0000C0">:</font>
+<br/>    <font color="#C00000">return</font> <font color="#0000C0">(</font><font color="#0080C0">2</font><font color="#0000C0">*</font><font color="#000000">pi</font><font color="#0000C0">*</font><font color="#000000">omega</font><font color="#0000C0">)</font><font color="#0000C0">/</font><font color="#000000">sqrt</font><font color="#0000C0">(</font><font color="#000000">pow</font><font color="#0000C0">(</font><font color="#000000">alpha</font><font color="#0000C0">,</font><font color="#0080C0">2</font><font color="#0000C0">)</font><font color="#0000C0">*</font><font color="#0000C0">(</font><font color="#0080C0">1</font><font color="#0000C0">+</font><font color="#000000">pow</font><font color="#0000C0">(</font><font color="#000000">theta</font><font color="#0000C0">,</font><font color="#0080C0">2</font><font color="#0000C0">)</font><font color="#0000C0">)</font><font color="#0000C0">)</font>
+<br/> 
+<br/><font color="#C00000">def</font> <font color="#000000">dist</font><font color="#0000C0">(</font><font color="#000000">a</font><font color="#0000C0">,</font><font color="#000000">b</font><font color="#0000C0">)</font><font color="#0000C0">:</font>
+<br/>    <font color="#C00000">return</font> <font color="#000000">sqrt</font><font color="#0000C0">(</font><font color="#000000">pow</font><font color="#0000C0">(</font><font color="#000000">a</font><font color="#0000C0">[</font><font color="#0080C0">0</font><font color="#0000C0">]</font><font color="#0000C0">-</font><font color="#000000">b</font><font color="#0000C0">[</font><font color="#0080C0">0</font><font color="#0000C0">]</font><font color="#0000C0">,</font><font color="#0080C0">2</font><font color="#0000C0">)</font><font color="#0000C0">+</font><font color="#000000">pow</font><font color="#0000C0">(</font><font color="#000000">a</font><font color="#0000C0">[</font><font color="#0080C0">1</font><font color="#0000C0">]</font><font color="#0000C0">-</font><font color="#000000">b</font><font color="#0000C0">[</font><font color="#0080C0">1</font><font color="#0000C0">]</font><font color="#0000C0">,</font><font color="#0080C0">2</font><font color="#0000C0">)</font><font color="#0000C0">)</font>
+<br/> 
+<br/><font color="#C00000">def</font> <font color="#000000">rasterspiral</font><font color="#0000C0">(</font><font color="#000000">TL</font><font color="#0000C0">,</font><font color="#000000">BR</font><font color="#0000C0">,</font><font color="#000000">F</font><font color="#0000C0">)</font><font color="#0000C0">:</font>
+<br/>    <font color="#008000"># Distance between spiral loops
+<br/></font>    <font color="#000000">alphas</font><font color="#0000C0">=</font><font color="#0080C0">1</font><font color="#0000C0">/</font><font color="#000000">sqrt</font><font color="#0000C0">(</font><font color="#0080C0">2</font><font color="#0000C0">)</font>
+<br/>    <font color="#008000"># Distance along spiral at each step
+<br/></font>    <font color="#000000">omegas</font><font color="#0000C0">=</font><font color="#0080C0">1</font><font color="#0000C0">/</font><font color="#000000">sqrt</font><font color="#0000C0">(</font><font color="#0080C0">2</font><font color="#0000C0">)</font>
+<br/>    <font color="#008000"># Starting theta
+<br/></font>    <font color="#000000">thetas</font><font color="#0000C0">=</font><font color="#0080C0">0</font>
+<br/> 
+<br/>    <font color="#008000"># Define top left pixel and bottom right pixel coordinates
+<br/></font>    <font color="#0000C0">(</font><font color="#000000">tlx</font><font color="#0000C0">,</font><font color="#000000">tly</font><font color="#0000C0">)</font><font color="#0000C0">=</font><font color="#000000">TL</font>
+<br/>    <font color="#0000C0">(</font><font color="#000000">brx</font><font color="#0000C0">,</font><font color="#000000">bry</font><font color="#0000C0">)</font><font color="#0000C0">=</font><font color="#000000">BR</font>
+<br/>    <font color="#008000"># Spiral focus coordinates (must lie within rectangle above)
+<br/></font>    <font color="#0000C0">(</font><font color="#000000">xf</font><font color="#0000C0">,</font><font color="#000000">yf</font><font color="#0000C0">)</font><font color="#0000C0">=</font><font color="#000000">F</font>
+<br/> 
+<br/>    <font color="#008000"># Find which corner is farthest from the spiral focus
+<br/></font>    <font color="#000000">corners</font><font color="#0000C0">=</font><font color="#0000C0">[</font><font color="#0000C0">[</font><font color="#000000">tlx</font><font color="#0000C0">,</font><font color="#000000">tly</font><font color="#0000C0">]</font><font color="#0000C0">,</font><font color="#0000C0">[</font><font color="#000000">tlx</font><font color="#0000C0">,</font><font color="#000000">bry</font><font color="#0000C0">]</font><font color="#0000C0">,</font><font color="#0000C0">[</font><font color="#000000">brx</font><font color="#0000C0">,</font><font color="#000000">bry</font><font color="#0000C0">]</font><font color="#0000C0">,</font><font color="#0000C0">[</font><font color="#000000">brx</font><font color="#0000C0">,</font><font color="#000000">tlx</font><font color="#0000C0">]</font><font color="#0000C0">]</font>
+<br/>    <font color="#000000">distances</font><font color="#0000C0">=</font><font color="#0000C0">[</font><font color="#000000">dist</font><font color="#0000C0">(</font><font color="#0000C0">[</font><font color="#000000">xf</font><font color="#0000C0">,</font><font color="#000000">yf</font><font color="#0000C0">]</font><font color="#0000C0">,</font><font color="#000000">i</font><font color="#0000C0">)</font> <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">corners</font><font color="#0000C0">]</font>
+<br/>    <font color="#000000">farthestind</font><font color="#0000C0">=</font><font color="#000000">max</font><font color="#0000C0">(</font><font color="#000000">xrange</font><font color="#0000C0">(</font><font color="#000000">len</font><font color="#0000C0">(</font><font color="#000000">distances</font><font color="#0000C0">)</font><font color="#0000C0">)</font><font color="#0000C0">,</font> <font color="#000000">key</font><font color="#0000C0">=</font><font color="#000000">distances</font><font color="#0000C0">.</font><font color="#000000">__getitem__</font><font color="#0000C0">)</font>
+<br/>    <font color="#000000">farthest</font><font color="#0000C0">=</font><font color="#000000">corners</font><font color="#0000C0">[</font><font color="#000000">farthestind</font><font color="#0000C0">]</font>
+<br/> 
+<br/>    <font color="#008000"># Initialise the spiral at F
+<br/></font>    <font color="#000000">xc</font><font color="#0000C0">,</font><font color="#000000">yc</font><font color="#0000C0">=</font><font color="#000000">xf</font><font color="#0000C0">,</font><font color="#000000">yf</font>
+<br/>    <font color="#000000">results</font><font color="#0000C0">=</font><font color="#0000C0">[</font><font color="#0000C0">(</font><font color="#000000">xc</font><font color="#0000C0">,</font><font color="#000000">yc</font><font color="#0000C0">)</font><font color="#0000C0">]</font>
+<br/> 
+<br/>    <font color="#008000"># Keep spiralling until we've capture the farthest corner
+<br/></font>    <font color="#C00000">while</font> <font color="#0000C0">[</font><font color="#000000">xc</font><font color="#0000C0">,</font><font color="#000000">yc</font><font color="#0000C0">]</font><font color="#0000C0">!=</font><font color="#000000">farthest</font><font color="#0000C0">:</font>
+<br/>        <font color="#008000"># Update the step in angle based on current angle etc.
+<br/></font>        <font color="#000000">deltanew</font><font color="#0000C0">=</font><font color="#000000">delta</font><font color="#0000C0">(</font><font color="#000000">alphas</font><font color="#0000C0">,</font><font color="#000000">thetas</font><font color="#0000C0">,</font><font color="#000000">omegas</font><font color="#0000C0">)</font>
+<br/>        <font color="#000000">thetas</font><font color="#0000C0">=</font><font color="#000000">thetas</font><font color="#0000C0">+</font><font color="#000000">deltanew</font>
+<br/>        <font color="#008000"># Calculate the next coordinates
+<br/></font>        <font color="#000000">xc</font><font color="#0000C0">,</font><font color="#000000">yc</font><font color="#0000C0">=</font><font color="#000000">xf</font><font color="#0000C0">+</font><font color="#000000">x</font><font color="#0000C0">(</font><font color="#000000">thetas</font><font color="#0000C0">,</font><font color="#000000">alphas</font><font color="#0000C0">)</font><font color="#0000C0">,</font><font color="#000000">yf</font><font color="#0000C0">+</font><font color="#000000">y</font><font color="#0000C0">(</font><font color="#000000">thetas</font><font color="#0000C0">,</font><font color="#000000">alphas</font><font color="#0000C0">)</font>
+<br/>        <font color="#008000"># If these coordinates lie within the defined rectangle
+<br/></font>        <font color="#008000"># then store them
+<br/></font>        <font color="#C00000">if</font> <font color="#000000">tlx</font><font color="#0000C0">&lt;=</font><font color="#000000">xc</font><font color="#0000C0">&lt;=</font><font color="#000000">brx</font> <font color="#C00000">and</font> <font color="#000000">tly</font><font color="#0000C0">&lt;=</font><font color="#000000">yc</font><font color="#0000C0">&lt;=</font><font color="#000000">bry</font><font color="#0000C0">:</font>
+<br/>            <font color="#000000">results</font><font color="#0000C0">.</font><font color="#000000">append</font><font color="#0000C0">(</font><font color="#0000C0">(</font><font color="#000000">xc</font><font color="#0000C0">,</font><font color="#000000">yc</font><font color="#0000C0">)</font><font color="#0000C0">)</font>
+<br/> 
+<br/>    <font color="#008000"># Now eliminate duplicate copies of points on the spiral
+<br/></font>    <font color="#000000">results</font><font color="#0000C0">=</font><font color="#000000">uniquer</font><font color="#0000C0">(</font><font color="#000000">results</font><font color="#0000C0">)</font>
+<br/>    <font color="#C00000">return</font> <font color="#000000">results</font>
+<br/> 
+<br/><font color="#008000"># Example of use:
+<br/></font><font color="#000000">test</font><font color="#0000C0">=</font><font color="#000000">rasterspiral</font><font color="#0000C0">(</font><font color="#0000C0">(</font><font color="#0080C0">0</font><font color="#0000C0">,</font><font color="#0080C0">0</font><font color="#0000C0">)</font><font color="#0000C0">,</font><font color="#0000C0">(</font><font color="#0080C0">50</font><font color="#0000C0">,</font><font color="#0080C0">100</font><font color="#0000C0">)</font><font color="#0000C0">,</font><font color="#0000C0">(</font><font color="#0080C0">25</font><font color="#0000C0">,</font><font color="#0080C0">50</font><font color="#0000C0">)</font><font color="#0000C0">)</font><font color="#000000"></font></font></pre>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/></article></body>
+</html>

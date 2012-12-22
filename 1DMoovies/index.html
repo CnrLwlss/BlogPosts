@@ -1,0 +1,54 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+<head><title>One Dimensional Movies</title>
+<meta charset="utf-8">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+<body><header><h1>One Dimensional Movies</h1><time datetime="2007-07-15T23:41:00Z">23:41 Sunday 15th July 2007</time></header><article>This was the only post I put on my blogspot blog.  Which I will no longer use.  It was posted Thursday, 22 February 2007, and you can see it here:
+<br/>
+<br/>http://conchubhair.blogspot.com/2007/02/how-to-make-one-dimensional-photographs.html
+<br/>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<br/><span>I made a lot of one-dimensional photographs over the past couple of days.  You can see them all </span><a href="http://www.vimeo.com/user:Conor/tag:1dot00">here</a><span>.  I like looking at them, they force me to think a lot more about the composition of my photos as</span><span> I try to interpret the dynamic events in these videos and relate them to the original photographs</span><span>.  It also makes me think more about the colours that are in them.  People often complain to me that my photos are too saturated.  I like colours.
+<br/>
+<br/></span><span>Pete and Adrienne have asked how these were made. It is not so straight-forward, so I have put the description on here. First, you take a video-frame-sized photograph like this one:</span>
+<br/>
+<br/><a href="http://bp1.blogger.com/_dFJUmx7oFvc/Rd3snLEOHFI/AAAAAAAAAAM/tDZbyzQ8NyM/s1600-h/OneDPicFreeTrade.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" s><img alt="" border="0" id="BLOGGER_PHOTO_ID_5034440116199627858" src="http://bp1.blogger.com/_dFJUmx7oFvc/Rd3snLEOHFI/AAAAAAAAAAM/tDZbyzQ8NyM/s320/OneDPicFreeTrade.jpg" style="margin: 0pt 10px 10px 0pt; float: left; cursor: pointer;"/></a>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/><p>
+<br/>Then, you have to take a tiny horizontal slice of it (as thin as possible, one pixel high) like this:</p>
+<br/><a href="http://bp3.blogger.com/_dFJUmx7oFvc/Rd33IrEOHJI/AAAAAAAAAA4/eBz7_cKpyD0/s1600-h/ExamplethinOneDPicFreeTrade000150.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img alt="" border="0" id="BLOGGER_PHOTO_ID_5034451686841523346" src="http://bp3.blogger.com/_dFJUmx7oFvc/Rd33IrEOHJI/AAAAAAAAAA4/eBz7_cKpyD0/s320/ExamplethinOneDPicFreeTrade000150.jpg" style="margin: 0pt 10px 10px 0pt; float: left; cursor: pointer;"/></a><span style="font-family:trebuchet ms;">
+<br/></span>
+<br/><a href="http://bp2.blogger.com/_dFJUmx7oFvc/Rd3udbEOHHI/AAAAAAAAAAc/6gdnicG9Ie8/s1600-h/ExamplePOneDPicFreeTrade000150.jpg" onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}"><img alt="" border="0" id="BLOGGER_PHOTO_ID_5034442147719158898" src="http://bp2.blogger.com/_dFJUmx7oFvc/Rd3udbEOHHI/AAAAAAAAAAc/6gdnicG9Ie8/s320/ExamplePOneDPicFreeTrade000150.jpg" style="margin: 0pt 10px 10px 0pt; float: left; cursor: pointer;"/></a><span>Then, you take this slice and copy it as many times as your original frames has pixels in height (576 in this case) to give an image like this:
+<br/>
+<br/></span><span>This image is a rectangle with the same dimensions as the original image, but it is one-dimensional in that it is a magnification of the thinnest slice possible of the original, effectively removing the vertical dimension from the photo.  All variation now occurs in the horizontal dimension.
+<br/>
+<br/>This gives you one frame for the video.  Basically, you need to repeat this for each row of pixels in the original photograph, and patch the resulting one-dimensional images together (in order) to produce a video 576 frames (23.04 seconds) long.
+<br/>
+<br/>You can download an XVid .avi of this example <a href="http://storage2.vimeo.com/clips/2007/02/22/vimeo.289616.a722fc.avi?aa2cd3">here</a>.  Or else you can look at it here:
+<br/></span>
+<br/>
+<br/><embed height="300" quality="best" scale="exactfit" src="http://www.vimeo.com/moogaloop.swf?clip_id=144110" type="application/x-shockwave-flash" width="400"></embed>
+<br/>
+<br/><br/>
+<br/>
+<br/><a href="http://www.vimeo.com/clip:144110">Free Trade</a> on <a href="http://www.vimeo.com/">Vimeo</a>
+<br/>
+<br/><span style="font-weight: bold;">Technical info:</span>  To produce a one-dimensional frame as above, I converted photographs into arrays of RGB values (triplets of integers between 0 and 255 representing the colour of each pixel).  I then took rows of these arrays, copying them 576 times to make a new arrays, and then converted these new arrays back into photographs.  I'm sure there are many different tools you could use to do this, but I used <a href="http://www.wolfram.com/">Mathematica 5.0</a>.</article></body>
+</html>

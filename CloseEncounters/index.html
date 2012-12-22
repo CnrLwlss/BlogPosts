@@ -1,0 +1,25 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+<head><title>CloseEncounters</title>
+<meta charset="utf-8">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+<body><header><h1>CloseEncounters</h1><time datetime="2010-01-12T23:10:00Z">23:10 Tuesday 12th January 2010</time></header><article>I stumbled across the Python <a href="http://docs.python.org/library/winsound.html">winsound</a> module today.  It is a standard library on Windows machines and it has a function for controlling the PC speaker.  Harf.
+<br/>
+<br/>Hear it play the music from <a href="http://en.wikipedia.org/wiki/Close_Encounters_of_the_Third_Kind">Close Encounters of a Third Kind</a> from a list of frequencies and durations:
+<br/>
+<br/><html>
+<br/><pre><font face="Lucida,Courier New"><font color="#C00000">import</font> <font color="#000000">winsound</font>
+<br/><font color="#C00000">from</font> <font color="#000000">winsound</font> <font color="#C00000">import</font> <font color="#0000C0">*</font>
+<br/><font color="#000000">music</font><font color="#0000C0">=</font><font color="#0000C0">(</font><font color="#0000C0">(</font><font color="#0080C0">784</font><font color="#0000C0">,</font><font color="#0080C0">1</font><font color="#0000C0">)</font><font color="#0000C0">,</font><font color="#0000C0">(</font><font color="#0080C0">880</font><font color="#0000C0">,</font><font color="#0080C0">1</font><font color="#0000C0">)</font><font color="#0000C0">,</font><font color="#0000C0">(</font><font color="#0080C0">698</font><font color="#0000C0">,</font><font color="#0080C0">1</font><font color="#0000C0">)</font><font color="#0000C0">,</font><font color="#0000C0">(</font><font color="#0080C0">349</font><font color="#0000C0">,</font><font color="#0080C0">1</font><font color="#0000C0">)</font><font color="#0000C0">,</font><font color="#0000C0">(</font><font color="#0080C0">523</font><font color="#0000C0">,</font><font color="#0080C0">3</font><font color="#0000C0">)</font><font color="#0000C0">)</font>
+<br/><font color="#C00000">for</font> <font color="#000000">x</font> <font color="#C00000">in</font> <font color="#000000">music</font><font color="#0000C0">:</font>
+<br/>    <font color="#000000">Beep</font><font color="#0000C0">(</font><font color="#000000">x</font><font color="#0000C0">[</font><font color="#0080C0">0</font><font color="#0000C0">]</font><font color="#0000C0">,</font><font color="#0080C0">550</font><font color="#0000C0">*</font><font color="#000000">x</font><font color="#0000C0">[</font><font color="#0080C0">1</font><font color="#0000C0">]</font><font color="#0000C0">)</font><font color="#000000"></font></font></pre>
+<br/>
+<br/></html>
+<br/>
+<br/>A list of <a href="http://en.wikipedia.org/wiki/Pitch_%28music%29#Labelling%20pitches">frequencies</a> and durations is a simple, computational form of musical notation.</article></body>
+</html>

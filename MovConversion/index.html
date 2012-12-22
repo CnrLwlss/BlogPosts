@@ -1,0 +1,86 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+<head><title>Converting .mov files to .avi in Microsoft Windows</title>
+<meta charset="utf-8">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+<body><header><h1>Converting .mov files to .avi in Microsoft Windows</h1><time datetime="2012-01-08T19:03:00Z">19:03 Sunday 8th January 2012</time></header><article>Over the christmas, I got a present of a <a href="http://www.dpreview.com/news/2011/8/24/nikonaw100">Nikon Coolpix AW100</a>.  It's a compact camera and so it's limited in flexibility and image quality compared to my DSLR, however it has some unusual features that I'm enjoying experimenting with.  It's waterproof (!), does <a href="http://en.wikipedia.org/wiki/Geotagging">geotagging</a> (example <a href="http://www.flickr.com/photos/conchur/map?&amp;fLat=53.1342&amp;fLon=-9.248&amp;zl=5&amp;map_type=hyb&amp;order_by=recent">here</a>) and shoots video at <a href="http://en.wikipedia.org/wiki/1080p">1080p</a>, and can also shoot video at 240 frames per second (at low resolution).
+<br/>
+<br/>Video captured on this device is stored as <a href="http://en.wikipedia.org/wiki/.mov">.mov</a> files, which is a bummer as this is an Apple Quicktime format and although there are plenty of other tools which support playback of these files, there's very little support for editing this type of file outside of Quicktime.  And I hate Quicktime.  And Apple.  Converting these files to the more Windows friendly <a href="http://en.wikipedia.org/wiki/Audio_Video_Interleave">.avi</a> format would allow the use of <a href="http://www.virtualdub.org/">VirtualDub</a> which is a really fast and reliable, heavily optimised video editing tool written in C++.
+<br/>
+<br/>There are two types of reasons for wanting editing a short video clip: A) to trim bad parts of the shot, to grade colour or apply filters, to patch several trimmed clips together to make a scene or B) to compress the clip for storage or publication (e.g. host on your website or upload to Vimeo or YouTube).  I'm interested in doing both of these things, and I spent quite a while today figuring out how to allow this under Windows, and before I forget how it all works, I thought I should describe it here.
+<br/>
+<br/><h2>Download and "install" MPlayer</h2>
+<br/>First, you need to get your hands on the MPlayer and MEncoder tools.  They come packaged together <a href="http://www.mplayerhq.hu/design7/dload.html">here</a>.  Get the Windows builds, and download the version compiled for your computer's CPU (e.g. I got the version compiled for Intel Pentium 4 or better).  Extract the folder from the archive you've dowloaded and move it to a sensible place on your hard-drive.  I renamed the folder to "MPlayer" and moved it to "C:\MPlayer", which will crop up later in these instructions.
+<br/>
+<br/><h2>Create a batch script for converting <a href="http://en.wikipedia.org/wiki/.mov">.mov</a> to <a href="http://en.wikipedia.org/wiki/X264">x264</a> <a href="http://en.wikipedia.org/wiki/Audio_Video_Interleave">.avi</a></h2>
+<br/>
+<br/>.avi files are much more widely accepted as input for video editing software, and <a href="http://en.wikipedia.org/wiki/X264">x264</a> is a good, modern video compressor (or <a href="http://en.wikipedia.org/wiki/Codec">codec</a>), similar to that used in high-definition <a href="http://en.wikipedia.org/wiki/Blu-ray_Disc">BluRay</a> videos.
+<br/>
+<br/>Using <a href="http://en.wikipedia.org/wiki/Notepad_(software)">notepad</a>, create an empty text file called MPConvertx264.bat in your MPlayer directory (e.g. C:\MPlayer).  The extension .bat indicates that this is a <a href="http://en.wikipedia.org/wiki/Batch_file">Windows batch file</a> which lets you automate actions in Windows, like a <a href="http://en.wikipedia.org/wiki/Shell_script">shell script</a> in <a href="http://en.wikipedia.org/wiki/Linux">Linux</a>.  Copy the text below into it, save and close the file.  If your MPlayer files are in a folder other than C:\MPlayer, you will need to adjust the text to reflect that.
+<br/>
+<br/><code>
+<br/>Title %~n1 -- pass 1
+<br/>"C:\MPlayer\mencoder.exe"  %1 -oac pcm -ovc x264 -x264encopts pass=1:turbo:bitrate=6000:frameref=1:analyse=all:me=umh:subme=4:trellis=1:bframes=1:subq=4:mixed_refs:weight_b:no_fast_pskip:direct_pred=auto:mixed_refs:nr=200 -vf harddup -oac pcm -o NUL
+<br/>
+<br/>Title %~n1 -- pass 2
+<br/>"C:\MPlayer\mencoder.exe"  %1 -oac pcm -ovc x264 -x264encopts pass=2:bitrate=6000:frameref=4:analyse=all:me=umh:subme=7:trellis=2:bframes=1:subq=7:mixed_refs:weight_b:no_fast_pskip:direct_pred=auto:mixed_refs:nr=200 -vf harddup -oac pcm -o "%~1_x264.avi" %1
+<br/>\\@pause
+<br/>del *.log
+<br/></code>
+<br/>
+<br/>If you drag one of your 1080p .mov files and drop it on the .bat file you've just created in the MPlayer folder, it will automatically convert it to a compressed .avi file.
+<br/>
+<br/><h2>Create a batch script for converting <a href="http://en.wikipedia.org/wiki/.mov">.mov</a> to <a href="http://en.wikipedia.org/wiki/Huffyuv">HuffyUV</a> <a href="http://en.wikipedia.org/wiki/Audio_Video_Interleave">.avi</a></h2>
+<br/>
+<br/>If you want to continue to edit the clip, for instance trim it and append it to other clips to make a short movie, then it doesn't really make much sense to take a file that your camera has already compressed (with a slight loss in image quality) and recompress it (incurring another slight loss in image quality) to allow editing in Windows, since after editing you will surely compress the video again (incurring yet another loss in image quality).  To avoid all of these so-called lossy steps, we can immediately convert to a lossless type of .avi: for instance using the <a href="http://en.wikipedia.org/wiki/Huffyuv">HuffyUV</a> codec instead of the <a href="http://en.wikipedia.org/wiki/X264">x264</a> codec.  The disadvantage of the HuffyUV codec is that the files are very large, but that's probably ok since they will only be temporary files which you will trim and edit before compressing your final masterpiece with a more efficient (but lossy) codec such as <a href="http://en.wikipedia.org/wiki/X264">x264</a>.  Once the final video is complete (after editing with <a href="http://www.virtualdub.org/">VirtualDub</a> for instance), you can delete the temporary, intermediate HuffyUV files to free up space.
+<br/>
+<br/>To convert .mov files to HuffyUV .avi files, just create an empty text file called MPLossless.bat in the MPlayer folder, as before and add the text below to it:
+<br/>
+<br/><code>
+<br/>Title %~n1 -- Lossless encoding
+<br/>"C:\MPlayer\mencoder.exe"  %1 -oac pcm -ovc lavc -lavcopts vcodec=ffvhuff:vstrict=-1:vhq:psnr -noskip -o "%~1_huff.avi" %1
+<br/>\\@pause
+<br/></code>
+<br/>
+<br/>Again, dragging and dropping a .mov file onto this .bat file will perform the appropriate conversion.
+<br/>
+<br/><h2>Windows tricks to make conversion easier</h2>
+<br/>
+<br/>We can allow instant conversion of files by right-clicking on them by adding these files to the "Send To" menu.  Simply copy both files to:
+<br/>
+<br/><code>C:\Users\[USER NAME]\AppData\Roaming\Microsoft\Windows\SendTo</code>
+<br/>
+<br/>replacing [USER NAME] with the appropriate Windows user name.
+<br/>
+<br/>We can also write some batch files to carry out batch conversion of many .mov files in series, freeing you to do other things while your computer is busy converting your files.
+<br/>
+<br/>As above, simply create a .bat file (e.g. Makex264.bat) containing the following text and place it into a folder containing .mov files, in order to convert each one to an x264 .avi:
+<br/>
+<br/><code>for /f %%1 IN ('dir /b *.MOV') do call C:\MPlayer\MPConvertx264.bat %%1</code>
+<br/>
+<br/>Similarly, create a .bat file (e.g. MakeLossless.bat) with the following text for lossless conversion of all .mov files:
+<br/>
+<br/><code>for /f %%1 IN ('dir /b *.MOV') do call C:\MPlayer\MPLossless.bat %%1</code>
+<br/>
+<br/>Simply double-click on either .bat file to convert all clips in the folder.
+<br/>
+<br/><h2>Credits</h2>
+<br/>
+<br/>I patched these instructions together, adjusting handy example scripts from <a href="http://lists.mplayerhq.hu/pipermail/mplayer-users/2003-July/034859.html">these</a> <a href="http://www.networkedmediatank.com/showthread.php?tid=26181">three</a> <a href="http://www.youtube.com/watch?v=i6CKsfWTogA">sources</a>.
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/></article></body>
+</html>

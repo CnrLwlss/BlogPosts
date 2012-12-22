@@ -1,0 +1,290 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+<head><title>Testing optimisation algorithms: Part IV - Objective function and optimisation in Python</title>
+<meta charset="utf-8">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+<body><header><h1>Testing optimisation algorithms: Part IV - Objective function and optimisation in Python</h1><time datetime="2011-09-28T14:36:00Z">14:36 Wednesday 28th September 2011</time></header><article>In <a href="http://cnr.lwlss.net/CirclePackingObjective">part I</a> of this series of posts, I presented the mathematics behind <a href="http://en.wikipedia.org/wiki/Circle_packing">circle packing</a>.  In <a href="http://cnr.lwlss.net/CircleObjectivesR">part II</a> I demonstrated an implementation of this problem in <a href="http://www.r-project.org"></a>R, together with an <a href="http://www.r-project.org"></a>R function for visualising candidate solutions.  In <a href="http://cnr.lwlss.net/GlobOptR">part III</a> I tested some optimisation algorithms from various <a href="http://www.r-project.org"></a>R packages.
+<br/>
+<br/>In this post I will present an implementation of this problem in <a href="http://www.python.org/">Python</a> (code below), a first attempt at optimisation with the same <a href="http://en.wikipedia.org/wiki/Limited-memory_BFGS">L-BFGS-B</a> algorithm (local optimisation subject to boundary constraints, this time from the <a href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin_l_bfgs_b.html">scipy.optimize</a> package) presented in <a href="http://cnr.lwlss.net/GlobOptR">part III</a> and some functions for visualising solutions with <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">Scalable Vector Grapics</a> (.svg files).
+<br/>
+<br/>I generally prefer writing code in <a href="http://www.python.org/">Python</a> to <a href="http://www.r-project.org"></a>R.  <a href="http://www.python.org/">Python</a> is a more "proper" programming language, is more flexible and extensible than <a href="http://www.r-project.org"></a>R and has more beautiful syntax and is therefore more readable (which is particularly important when you write code as messily as I do).  
+<br/>
+<br/><a href="http://www.r-project.org"></a>R does have some advantages.  Its <a href="http://www.statmethods.net/interface/packages.html">package<a> system (for extending and documenting <a href="http://www.r-project.org"></a>R</a> functionality) is extremely easy to use and efficient.  <a href="http://www.r-tutor.com/r-introduction/data-frame">Data frames</a> in <a href="http://www.r-project.org"></a>R</a> are versatile, spreadsheet-like objects allowing you to mix different types of data (e.g. text, integers, real numbers) and label data with strings (names of rows and columns).  There is no equivalent in <a href="http://www.python.org/">Python</a> or other programming languages.  <a href="http://www.r-project.org"></a>R handles plotting, in a flexible, dependable way (requires an external package in <a href="http://www.python.org/">Python</a>).
+<br/>
+<br/>Theoretically, <a href="http://www.python.org/">Python</a> should be faster than <a href="http://www.r-project.org"></a>R, but while writing the code below, I was surprised to find that accessing elements of <a href="http://numpy.scipy.org/">NumPy</a> arrays using square bracket [] notation was approximately 3 times slower than the equivalent vector operations in <a href="http://www.r-project.org"></a>R.  Fortunately I had read <a href="http://wesmckinney.com/blog/?p=215">this post</a> about numpy.take (cheers Darren!) which speeded up access by a factor of 3, rendering objective function evaluation speeds approximately equal in both <a href="http://www.r-project.org"></a>R and <a href="http://www.python.org/">Python</a>.  I am still quite surprised that they are not significantly faster in <a href="http://www.python.org/">Python</a>.
+<br/>
+<br/>In <a href="http://cnr.lwlss.net/CircleObjectivesR">part II</a> I presented the drawCircles R function to visualise circle packing solutions.  I am quite happy with this, particularly because it produces vector graphic output (in the form of a <a href="http://en.wikipedia.org/wiki/Portable_Document_Format">.pdf</a> file).  However, it's not perfect.  For one thing, I had to convert the <a href="http://en.wikipedia.org/wiki/Portable_Document_Format">.pdf</a> to a <a href="http://en.wikipedia.org/wiki/Portable_Network_Graphics">.png</a> file to display the <a href="http://farm7.static.flickr.com/6077/6159948456_1fb7418363_o.png">image</a> online.
+<br/>
+<br/>For the <a href="http://www.python.org/">Python</a> equivalent, I no longer have access to native plotting functions, but can trivially use <a href="http://www.python.org/">Python</a> to build up text files to draw graphics.  I have been a fan of manually writing <a href="http://en.wikipedia.org/wiki/PostScript">PostScript</a> files for a long time (I am a proud owner of a copy of Adobe's <a href="http://www-cdf.fnal.gov/offline/PostScript/BLUEBOOK.PDF">Blue Book</a>), but for this example I chose to try out <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">svg</a>.  I don't yet know if <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">svg</a> is as powerful as <a href="http://en.wikipedia.org/wiki/PostScript">PostScript</a>, but it is more straightforward for creating images of arbitrary size and aspect ratio with <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">svg</a> (no longer constrained by physical page sizes).  <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">SVG</a> is a vector graphics format which can be converted losslessly to <a href="http://en.wikipedia.org/wiki/PostScript">PostScript</a> or <a href="http://en.wikipedia.org/wiki/Portable_Document_Format">pdf</a>.  <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">SVG</a> is a native web format, so I can display output images online directly like <a href="http://lwlss.net/dwnlds/BubblesOptArray100.svg">this</a>.
+<br/>
+<br/>Unfortunately <a href="http://drupal.org/">Drupal</a> (the <a href="http://en.wikipedia.org/wiki/Content_management_system">CMS</a> I use to run this blog) doesn't yet allow embedding of <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">.svg</a> images.  I haven't been able to get John Flower's <a href="http://johnflower.org/blog/drupal-needs-svg">SVG module</a> to work (I probably need to upgrade my installation of <a href="http://drupal.org/">Drupal</a>).  As far as I can tell, <a href="http://wordpress.org/">WordPress</a> suffers from the same difficulties with <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">svg</a> as <a href="http://drupal.org/">Drupal</a>.  Something to watch out for when choosing a tool for posting online...  I would really rather have something which serves up standard .html.  Here is the raster image version of the <a href="http://lwlss.net/dwnlds/BubblesOptArray100.svg">original</a>:
+<br/>
+<br/><img alt="144 sets of 27 circles packed into squares" height="500px" src="http://lwlss.net/dwnlds/BubblesOptArray100.png" width="500px">
+<br/>
+<br/>Finally, here's the code.  It uses the <a href="http://numpy.scipy.org/">NumPy</a> package to allow building and manipulating of arrays and the <a href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.take.html">numpy.take</a> <a href="http://wesmckinney.com/blog/?p=215">trick</a> mentioned above to speed up accessing elements.  It also uses a <a href="http://en.wikipedia.org/wiki/Closure_(computer_science)">function closure</a> to define the objective function for comparison with the <a href="http://www.r-project.org"></a>R equivalent from <a href="http://cnr.lwlss.net/CircleObjectivesR">part II</a>.
+<br/>
+<br/><!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%">  1
+<br/>  2
+<br/>  3
+<br/>  4
+<br/>  5
+<br/>  6
+<br/>  7
+<br/>  8
+<br/>  9
+<br/> 10
+<br/> 11
+<br/> 12
+<br/> 13
+<br/> 14
+<br/> 15
+<br/> 16
+<br/> 17
+<br/> 18
+<br/> 19
+<br/> 20
+<br/> 21
+<br/> 22
+<br/> 23
+<br/> 24
+<br/> 25
+<br/> 26
+<br/> 27
+<br/> 28
+<br/> 29
+<br/> 30
+<br/> 31
+<br/> 32
+<br/> 33
+<br/> 34
+<br/> 35
+<br/> 36
+<br/> 37
+<br/> 38
+<br/> 39
+<br/> 40
+<br/> 41
+<br/> 42
+<br/> 43
+<br/> 44
+<br/> 45
+<br/> 46
+<br/> 47
+<br/> 48
+<br/> 49
+<br/> 50
+<br/> 51
+<br/> 52
+<br/> 53
+<br/> 54
+<br/> 55
+<br/> 56
+<br/> 57
+<br/> 58
+<br/> 59
+<br/> 60
+<br/> 61
+<br/> 62
+<br/> 63
+<br/> 64
+<br/> 65
+<br/> 66
+<br/> 67
+<br/> 68
+<br/> 69
+<br/> 70
+<br/> 71
+<br/> 72
+<br/> 73
+<br/> 74
+<br/> 75
+<br/> 76
+<br/> 77
+<br/> 78
+<br/> 79
+<br/> 80
+<br/> 81
+<br/> 82
+<br/> 83
+<br/> 84
+<br/> 85
+<br/> 86
+<br/> 87
+<br/> 88
+<br/> 89
+<br/> 90
+<br/> 91
+<br/> 92
+<br/> 93
+<br/> 94
+<br/> 95
+<br/> 96
+<br/> 97
+<br/> 98
+<br/> 99
+<br/>100
+<br/>101
+<br/>102
+<br/>103
+<br/>104
+<br/>105
+<br/>106
+<br/>107
+<br/>108
+<br/>109
+<br/>110
+<br/>111
+<br/>112
+<br/>113
+<br/>114
+<br/>115
+<br/>116
+<br/>117
+<br/>118
+<br/>119
+<br/>120
+<br/>121
+<br/>122
+<br/>123
+<br/>124
+<br/>125
+<br/>126</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">random</span><span style="color: #666666">,</span> <span style="color: #0000FF; font-weight: bold">numpy</span>
+<br/>
+<br/><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">genGuess</span>(N,W,H):
+<br/>    <span style="color: #BA2121; font-style: italic">'''Generate sensible initial guess vector (random circle coordinates and radii)'''</span>
+<br/>    z<span style="color: #666666">=</span>numpy<span style="color: #666666">.</span>zeros(<span style="color: #666666">3*</span>N)
+<br/>    <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">xrange</span>(<span style="color: #666666">0</span>,N):
+<br/>        z[i<span style="color: #666666">*3</span>]<span style="color: #666666">=</span>random<span style="color: #666666">.</span>random()<span style="color: #666666">*</span>W
+<br/>        z[i<span style="color: #666666">*3+1</span>]<span style="color: #666666">=</span>random<span style="color: #666666">.</span>random()<span style="color: #666666">*</span>H
+<br/>        z[i<span style="color: #666666">*3+2</span>]<span style="color: #666666">=0.001*</span><span style="color: #008000">min</span>(W,H)<span style="color: #666666">+</span>random<span style="color: #666666">.</span>random()<span style="color: #666666">*</span>(<span style="color: #666666">0.009*</span><span style="color: #008000">min</span>(W,H))
+<br/>    <span style="color: #008000; font-weight: bold">return</span>(z)
+<br/>
+<br/>
+<br/><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">getPairs</span>(N):
+<br/>    <span style="color: #BA2121; font-style: italic">'''Generate all (2-way) unique pairings of N objects'''</span>
+<br/>    result<span style="color: #666666">=</span>[]
+<br/>    <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">xrange</span>(<span style="color: #666666">0</span>,N):
+<br/>        <span style="color: #008000; font-weight: bold">for</span> j <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">xrange</span>(<span style="color: #666666">0</span>,i):
+<br/>            result<span style="color: #666666">.</span>append([i,j])
+<br/>    <span style="color: #008000; font-weight: bold">return</span>(numpy<span style="color: #666666">.</span>array(result))
+<br/>
+<br/><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">createObj</span>(N,W,H):
+<br/>    <span style="color: #BA2121; font-style: italic">'''Function closure which initialises and creates a function for calculating the packing density of N circles in an W*H rectangle.  Circle coords and dimensions are represented by a single list z'''</span>
+<br/>    cpairs<span style="color: #666666">=</span>getPairs(N)
+<br/>    A<span style="color: #666666">=</span>cpairs[:,<span style="color: #666666">0</span>]
+<br/>    B<span style="color: #666666">=</span>cpairs[:,<span style="color: #666666">1</span>]
+<br/>    ind<span style="color: #666666">=</span><span style="color: #008000">range</span>(<span style="color: #666666">0</span>,<span style="color: #666666">3*</span>N)
+<br/>    a,b,c<span style="color: #666666">=</span>ind[<span style="color: #666666">0</span>:<span style="color: #666666">3*</span>N:<span style="color: #666666">3</span>],ind[<span style="color: #666666">1</span>:<span style="color: #666666">3*</span>N:<span style="color: #666666">3</span>],ind[<span style="color: #666666">2</span>:<span style="color: #666666">3*</span>N:<span style="color: #666666">3</span>]
+<br/>    <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">newObj</span>(z):
+<br/>        <span style="color: #BA2121; font-style: italic">'''Calculate packing density of N circles in W*H rectangle (N,W,H defined on function initialisation).  Circle coords and dimensions are represented by a single list z'''</span>
+<br/>        z<span style="color: #666666">=</span>numpy<span style="color: #666666">.</span>array(z,dtype<span style="color: #666666">=</span>numpy<span style="color: #666666">.</span>float)
+<br/>        <span style="color: #408080; font-style: italic"># Split z into x,y,r triplets: z[0],z[1],z[2] -&gt; x1,y1,r1</span>
+<br/>        <span style="color: #408080; font-style: italic">#x,y,r=z[a],z[b],z[c]</span>
+<br/>        x,y,r<span style="color: #666666">=</span>z<span style="color: #666666">.</span>take(a,axis<span style="color: #666666">=0</span>),z<span style="color: #666666">.</span>take(b,axis<span style="color: #666666">=0</span>),z<span style="color: #666666">.</span>take(c,axis<span style="color: #666666">=0</span>)
+<br/>
+<br/>        <span style="color: #408080; font-style: italic"># Some linear inequality constraints to be satisfied</span>
+<br/>        c1<span style="color: #666666">=</span>x<span style="color: #666666">+</span>r<span style="color: #666666">-</span>W <span style="color: #408080; font-style: italic"># &lt;0	</span>
+<br/>        c2<span style="color: #666666">=</span>y<span style="color: #666666">+</span>r<span style="color: #666666">-</span>H <span style="color: #408080; font-style: italic"># &lt;0</span>
+<br/>        c3<span style="color: #666666">=</span>r<span style="color: #666666">-</span>x <span style="color: #408080; font-style: italic"># &lt;= 0</span>
+<br/>        c4<span style="color: #666666">=</span>r<span style="color: #666666">-</span>y <span style="color: #408080; font-style: italic"># &lt;=0</span>
+<br/>        <span style="color: #408080; font-style: italic"># Many nonlinear inequality constraints</span>
+<br/>        <span style="color: #408080; font-style: italic">#c5=r[A]+r[B]-numpy.sqrt((x[A]-x[B])**2+(y[A]-y[B])**2) # &lt;=0</span>
+<br/>        c5<span style="color: #666666">=</span>r<span style="color: #666666">.</span>take(A,axis<span style="color: #666666">=0</span>)<span style="color: #666666">+</span>r<span style="color: #666666">.</span>take(B,axis<span style="color: #666666">=0</span>)<span style="color: #666666">-</span>numpy<span style="color: #666666">.</span>sqrt(numpy<span style="color: #666666">.</span>power(x<span style="color: #666666">.</span>take(A,axis<span style="color: #666666">=0</span>)<span style="color: #666666">-</span>x<span style="color: #666666">.</span>take(B,axis<span style="color: #666666">=0</span>),<span style="color: #666666">2</span>)<span style="color: #666666">+</span>numpy<span style="color: #666666">.</span>power(y<span style="color: #666666">.</span>take(A,axis<span style="color: #666666">=0</span>)<span style="color: #666666">-</span>y<span style="color: #666666">.</span>take(B,axis<span style="color: #666666">=0</span>),<span style="color: #666666">2</span>)) <span style="color: #408080; font-style: italic"># &lt;=0</span>
+<br/>
+<br/>        c1<span style="color: #666666">=</span>c1[c1<span style="color: #666666">&gt;0</span>]
+<br/>        c2<span style="color: #666666">=</span>c2[c2<span style="color: #666666">&gt;0</span>]
+<br/>        c3<span style="color: #666666">=</span>c3[c3<span style="color: #666666">&gt;0</span>]
+<br/>        c4<span style="color: #666666">=</span>c4[c4<span style="color: #666666">&gt;0</span>]
+<br/>        c5<span style="color: #666666">=</span>c5[c5<span style="color: #666666">&gt;0</span>]
+<br/>        constraints<span style="color: #666666">=</span>numpy<span style="color: #666666">.</span>concatenate((c1,c2,c3,c4,c5))
+<br/>
+<br/>        <span style="color: #408080; font-style: italic"># Actual objective function (fraction of area covered)</span>
+<br/>        res<span style="color: #666666">=</span>numpy<span style="color: #666666">.</span>pi<span style="color: #666666">*</span>numpy<span style="color: #666666">.</span>sum(numpy<span style="color: #666666">.</span>power(r,<span style="color: #666666">2</span>))<span style="color: #666666">/</span>(W<span style="color: #666666">*</span>H)<span style="color: #666666">-</span>numpy<span style="color: #666666">.</span>sum(numpy<span style="color: #666666">.</span>power(constraints,<span style="color: #666666">2</span>))
+<br/>        <span style="color: #008000; font-weight: bold">return</span>(<span style="color: #666666">-1*</span>res)
+<br/>    <span style="color: #008000; font-weight: bold">return</span>(newObj)
+<br/>
+<br/><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">vecToCircles</span>(z):
+<br/>    N<span style="color: #666666">=</span><span style="color: #008000">len</span>(z)<span style="color: #666666">/3</span>
+<br/>    <span style="color: #BA2121; font-style: italic">'''Convert z vector to an array of circle centres and radii'''</span>
+<br/>    ind<span style="color: #666666">=</span>[x <span style="color: #008000; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">xrange</span>(<span style="color: #666666">0</span>,<span style="color: #666666">3*</span>N)]
+<br/>    <span style="color: #408080; font-style: italic"># Split z into x,y,r triplets: z[0],z[1],z[2] -&gt; x1,y1,r1</span>
+<br/>    x,y,r<span style="color: #666666">=</span>numpy<span style="color: #666666">.</span>array([z[i] <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> ind[<span style="color: #666666">0</span>:<span style="color: #666666">3*</span>N:<span style="color: #666666">3</span>]]),numpy<span style="color: #666666">.</span>array([z[i] <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> ind[<span style="color: #666666">1</span>:<span style="color: #666666">3*</span>N:<span style="color: #666666">3</span>]]),numpy<span style="color: #666666">.</span>array([z[i] <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> ind[<span style="color: #666666">2</span>:<span style="color: #666666">3*</span>N:<span style="color: #666666">3</span>]])
+<br/>    clist<span style="color: #666666">=</span>numpy<span style="color: #666666">.</span>empty((N,<span style="color: #666666">3</span>),numpy<span style="color: #666666">.</span>float)
+<br/>    clist[:,<span style="color: #666666">0</span>],clist[:,<span style="color: #666666">1</span>],clist[:,<span style="color: #666666">2</span>]<span style="color: #666666">=</span>x,y,r
+<br/>    <span style="color: #008000; font-weight: bold">return</span>(clist)
+<br/>
+<br/><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">drawCircle</span>(x,y,r,s<span style="color: #666666">=2</span>,fillcol<span style="color: #666666">=</span><span style="color: #BA2121">&quot;none&quot;</span>,strokecol<span style="color: #666666">=</span><span style="color: #BA2121">&quot;black&quot;</span>):
+<br/>    <span style="color: #BA2121; font-style: italic">'''Draw a circle with centre x,y radius r, line thickness s, fill colour fillcol and line colour strokecol.'''</span>
+<br/>    <span style="color: #008000; font-weight: bold">return</span>(<span style="color: #BA2121">'''&lt;circle cx=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; cy=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; r=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; stroke-width=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; fill=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; stroke=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot;/&gt;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">'''</span><span style="color: #666666">%</span>(x,y,r<span style="color: #666666">-4*</span>s<span style="color: #666666">/10</span>,s,fillcol,strokecol))
+<br/>
+<br/><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">drawRect</span>(x,y,w,h,s<span style="color: #666666">=2</span>,fillcol<span style="color: #666666">=</span><span style="color: #BA2121">&quot;none&quot;</span>,strokecol<span style="color: #666666">=</span><span style="color: #BA2121">&quot;black&quot;</span>):
+<br/>    <span style="color: #BA2121; font-style: italic">'''Draw a rectangle with top left corner x,y, width w, height h, line thickness s, fill colour fillcol, line colour strokecol, exploded slightly so inner edge is rectangle specified by 1st 4 params.'''</span>
+<br/>    <span style="color: #008000; font-weight: bold">return</span>(<span style="color: #BA2121">'''&lt;rect x=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; y=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; width=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; height=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; stroke-width=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; fill=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; stroke=&quot;</span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot;/&gt;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">'''</span><span style="color: #666666">%</span>(x<span style="color: #666666">-</span>s<span style="color: #666666">/2</span>,y<span style="color: #666666">-</span>s<span style="color: #666666">/2</span>,w<span style="color: #666666">+</span>s,h<span style="color: #666666">+</span>s,s,fillcol,strokecol))
+<br/>
+<br/><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">svgHeader</span>(w,h):
+<br/>    <span style="color: #BA2121; font-style: italic">'''Write valid svg header specifying bounding box w wide and h high'''</span>
+<br/>    string<span style="color: #666666">=</span><span style="color: #BA2121">'''&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 </span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121"> </span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">&quot; version=&quot;1.1&quot;&gt;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">'''</span><span style="color: #666666">%</span>(w,h)
+<br/>    <span style="color: #008000; font-weight: bold">return</span>(string)
+<br/>
+<br/><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">svgFooter</span>():
+<br/>    <span style="color: #BA2121; font-style: italic">'''Write svg footer'''</span>
+<br/>    <span style="color: #008000; font-weight: bold">return</span>(<span style="color: #BA2121">'&lt;/svg&gt;'</span>)
+<br/>
+<br/><span style="color: #408080; font-style: italic"># Demo script</span>
+<br/><span style="color: #008000; font-weight: bold">if</span> __name__ <span style="color: #666666">==</span> <span style="color: #BA2121">&quot;__main__&quot;</span>:
+<br/>    <span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">time</span>
+<br/>    <span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">scipy</span> <span style="color: #008000; font-weight: bold">import</span> optimize
+<br/>    
+<br/>    N<span style="color: #666666">=27</span>            <span style="color: #408080; font-style: italic"># Number of circles</span>
+<br/>    w,h<span style="color: #666666">=10</span>,<span style="color: #666666">10</span>       <span style="color: #408080; font-style: italic"># Native rectangle dimensions</span>
+<br/>    rows,cols<span style="color: #666666">=12</span>,<span style="color: #666666">12</span> <span style="color: #408080; font-style: italic"># Graphical array size</span>
+<br/>    celldim<span style="color: #666666">=10</span>      <span style="color: #408080; font-style: italic"># Final graphics scaling factor</span>
+<br/>    margin<span style="color: #666666">=1</span>        <span style="color: #408080; font-style: italic"># Gap between plots (native scale).  Should be &gt;= 2* line</span>
+<br/>    line<span style="color: #666666">=0.1</span>        <span style="color: #408080; font-style: italic"># Line thickness for graphics (native scale)</span>
+<br/>    <span style="color: #408080; font-style: italic"># Generate a suitable objective function</span>
+<br/>    ObjFun<span style="color: #666666">=</span>createObj(N,w,h)
+<br/>    maxr<span style="color: #666666">=</span><span style="color: #008000">min</span>(w,h)<span style="color: #666666">/2.0</span>
+<br/>    outf<span style="color: #666666">=</span><span style="color: #008000">open</span>(<span style="color: #BA2121">&quot;BubblesOptArray100.svg&quot;</span>,<span style="color: #BA2121">&quot;w&quot;</span>) <span style="color: #408080; font-style: italic"># Prepare to draw circles in .svg file</span>
+<br/>    outf<span style="color: #666666">.</span>write(svgHeader(cols<span style="color: #666666">*</span>w<span style="color: #666666">*</span>(celldim<span style="color: #666666">+</span>margin)<span style="color: #666666">+</span>margin<span style="color: #666666">*</span>celldim,rows<span style="color: #666666">*</span>h<span style="color: #666666">*</span>(celldim<span style="color: #666666">+</span>margin)<span style="color: #666666">+</span>margin<span style="color: #666666">*</span>celldim))
+<br/>    
+<br/>    b<span style="color: #666666">=</span>[(<span style="color: #666666">0</span>,w),(<span style="color: #666666">0</span>,h),(<span style="color: #666666">0.01*</span>maxr,maxr)]<span style="color: #666666">*</span>N
+<br/>    <span style="color: #008000; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">xrange</span>(<span style="color: #666666">0</span>,rows<span style="color: #666666">*</span>cols):
+<br/>        arrx<span style="color: #666666">=</span>x<span style="color: #666666">%</span>cols
+<br/>        arry<span style="color: #666666">=</span>x<span style="color: #666666">//</span>rows
+<br/>        <span style="color: #008000; font-weight: bold">print</span>((arrx,arry))
+<br/>        start<span style="color: #666666">=</span>time<span style="color: #666666">.</span>time()
+<br/>        <span style="color: #408080; font-style: italic"># Randomly generate a sensible starting guess</span>
+<br/>        z<span style="color: #666666">=</span>genGuess(N,w,h)
+<br/>        <span style="color: #408080; font-style: italic"># Gradient based fmin_l_bfgs_b from scipy.optimize</span>
+<br/>        opt<span style="color: #666666">=</span>optimize<span style="color: #666666">.</span>fmin_l_bfgs_b(ObjFun,z,bounds<span style="color: #666666">=</span>b,m<span style="color: #666666">=12</span>,maxfun<span style="color: #666666">=500000</span>,approx_grad<span style="color: #666666">=</span><span style="color: #008000">True</span>)
+<br/>        <span style="color: #008000; font-weight: bold">print</span>(<span style="color: #BA2121">&quot;Optimisation time: &quot;</span><span style="color: #666666">+</span><span style="color: #008000">str</span>(time<span style="color: #666666">.</span>time()<span style="color: #666666">-</span>start))
+<br/>        res<span style="color: #666666">=</span>opt[<span style="color: #666666">0</span>]
+<br/>        <span style="color: #008000; font-weight: bold">print</span>(<span style="color: #BA2121">&quot;Initial guess objective function: &quot;</span><span style="color: #666666">+</span><span style="color: #008000">str</span>(ObjFun(z)))
+<br/>        <span style="color: #008000; font-weight: bold">print</span>(<span style="color: #BA2121">&quot;Final, optimised objective function: &quot;</span><span style="color: #666666">+</span><span style="color: #008000">str</span>(ObjFun(res)))
+<br/>        <span style="color: #008000; font-weight: bold">print</span>(opt[<span style="color: #666666">2</span>][<span style="color: #BA2121">'warnflag'</span>])
+<br/>        <span style="color: #008000; font-weight: bold">print</span>(opt[<span style="color: #666666">2</span>][<span style="color: #BA2121">'task'</span>])
+<br/>        <span style="color: #008000; font-weight: bold">print</span>(opt[<span style="color: #666666">2</span>][<span style="color: #BA2121">'funcalls'</span>])
+<br/>        <span style="color: #408080; font-style: italic"># Draw resulting circles</span>
+<br/>        clist<span style="color: #666666">=</span>vecToCircles(res<span style="color: #666666">*</span>celldim)
+<br/>        <span style="color: #408080; font-style: italic"># Offset circles for array</span>
+<br/>        clist[:,<span style="color: #666666">0</span>]<span style="color: #666666">=</span>clist[:,<span style="color: #666666">0</span>]<span style="color: #666666">+</span>margin<span style="color: #666666">*</span>celldim<span style="color: #666666">+</span>arrx<span style="color: #666666">*</span>(celldim<span style="color: #666666">+</span>margin)<span style="color: #666666">*</span>w
+<br/>        clist[:,<span style="color: #666666">1</span>]<span style="color: #666666">=</span>clist[:,<span style="color: #666666">1</span>]<span style="color: #666666">+</span>margin<span style="color: #666666">*</span>celldim<span style="color: #666666">+</span>arry<span style="color: #666666">*</span>(celldim<span style="color: #666666">+</span>margin)<span style="color: #666666">*</span>h
+<br/>        <span style="color: #008000; font-weight: bold">for</span> j <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">xrange</span>(<span style="color: #666666">0</span>,N):
+<br/>            outf<span style="color: #666666">.</span>write(drawCircle(clist[j,<span style="color: #666666">0</span>],clist[j,<span style="color: #666666">1</span>],clist[j,<span style="color: #666666">2</span>],s<span style="color: #666666">=</span>line<span style="color: #666666">*</span>celldim))
+<br/>        outf<span style="color: #666666">.</span>write(drawRect(margin<span style="color: #666666">*</span>celldim<span style="color: #666666">+</span>arrx<span style="color: #666666">*</span>(celldim<span style="color: #666666">+</span>margin)<span style="color: #666666">*</span>w,margin<span style="color: #666666">*</span>celldim<span style="color: #666666">+</span>arry<span style="color: #666666">*</span>(celldim<span style="color: #666666">+</span>margin)<span style="color: #666666">*</span>h,w<span style="color: #666666">*</span>celldim,h<span style="color: #666666">*</span>celldim,s<span style="color: #666666">=</span>line<span style="color: #666666">*</span>celldim))
+<br/>    outf<span style="color: #666666">.</span>write(svgFooter())
+<br/>    outf<span style="color: #666666">.</span>close()
+<br/></pre></td></tr></table></div>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/></img></article></body>
+</html>
