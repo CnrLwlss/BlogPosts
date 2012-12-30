@@ -1,0 +1,40 @@
+	
+	This model has a useful feature: we can know a priori how many events will occur.  
+	
+	Plots comparing continutous deterministic with discrete stochastic realisations of the same model
+	
+	Timings for discrete stochastic realisations of the model with realistic carrying capacities.
+
+Discrete, deterministic logistic map
+	Really interesting and important, but not what this article is about.
+
+	
+	
+	NCell' = (r/K)*NCell*(K-NCell)  <-- We can carry out discrete stochastic simulation with this form of the equation, based on mass action kinetics. 
+	NCell' = r*NCell*(1-NCell/K)    <-- But we can also have the more traditional form
+	
+	Either way, hazard function is simply:
+	r*NCell*(1-NCell/K)  
+	
+	Note that the hazard function depends on both r and K.  This is consistent with a regular mass-action kinetics model (outline below).
+	
+Discrete, stochatic logistic model
+	We can think about the construction of the logistic model ODE in a different way: by considering a simple chemical reaction between cells and nutrients, which obeys mass-action kinetics.  We have to make the usual approximations about perfect mixing for this to apply.
+	
+	rxns
+	Cell + Nut -> 2*Cell
+	[Cell]' = r[Cell][Nut]
+	[Nut]' = -r[Cell][Nut]
+	
+	conservation of mass
+	[Cell+Nut]' = 0
+	[Cell]+[Nut] = c
+	NCell + NNut = c
+	NCell(0) + NNut(0) = c
+	NCell0 + (K - NCell0) = c
+	c = K
+	
+	NCell + NNut = K
+	
+	NCell' = (r/K)*NCell*(K-NCell)  <-- We can carry out discrete stochastic simulation with this form of the equation, based on mass action kinetics. 
+	NCell' = r*NCell*(1-NCell/K)    <-- But we can also have the more traditional form
