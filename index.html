@@ -6,6 +6,9 @@
 <meta name="desciption" content="A home for some very occasional articles I write.  I have a wide range of interests and I won't focus on any area in particular.">
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="CLstyle.css">
+</link></link></meta>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </head>
 <body>
 <header><h1>cnr.lwlss.net</h1>
@@ -26,6 +29,90 @@
 
 <a href="./AboutConor" title="Much about me!">about...</a>&nbsp; &nbsp; &nbsp;<a href="./Archive" title="Archive of posts, sorted alphabetically">archive...</a>&nbsp; &nbsp; &nbsp;<a href="http://cnr.lwlss.net/rss.xml" title="RSS feed for reading posts using Google Reader for example">RSS feed...</a>
 </header>
+
+<article>
+	<h1>A discrete, stochastic, logistic population model</h1>
+	<time datetime="2012-12-29T18:32:05Z">18:32 Saturday 29th December 2012</time>
+	
+	<p>In this article, I will present a simple, discrete, stochastic version of the logistic population model and a convenient function for carrying out dynamic simulations from this model.  The discrete, stochastic version of the logistic model is relevant for any growth process initialised with small populations.  For example, in biology, the analysis of growth curves for clonal cell cultures derived from single cells is attractive for several technical reasons, but growth curves are likely to be very difficult to interpret with a continuous, deterministic modelling framework.  This is because during the first several population doublings, the system is discrete (low integer numbers of cells) and unmodelled environmental variability and cell-to-cell heterogeneity are likely to cause strongly stochastic effects on cell division.</p>
+	
+	<h2>Introduction to the logistic model</h2>
+	
+	 <p>The <a href="http://en.wikipedia.org/wiki/Logistic_function#In_ecology:_modeling_population_growth">logistic model</a> of population dynamics was proposed by <a href="http://en.wikipedia.org/wiki/Pierre_Fran%C3%A7ois_Verhulst">Verhulst</a> in 1838 as an improvement to the <a href="http://en.wikipedia.org/wiki/Malthusian_growth_model">Malthusian</a> exponential model for describing population growth.  The logistic model is a very simple mechanistic model that can be applied to a wide range of population types, including ecological populations or human demographics, but I am mostly interested in using the logistic model to describe the growth of clonal cell populations growing <i>in vitro</i></a>.</p>
+	 
+	 <p>The continuous, deterministic, exponential growth model of a population, or culture (of size $N$) of dividing cells with an intrinsic growth rate $r$ can be written as an ordinary differential equation:</p>
+	 	
+	$\frac{dN}{dt} = r N$
+	
+	<p>If we assume that the culture was inoculated with $N_0$ cells (the initial condition for the population size), we can easily solve the above ODE to give an analytical solution for the dynamics of population size according to the exponential model:</p>
+	
+	$N(t)=N_0 e^{r t}$
+	
+	<p>There are several strong assumptions embedded in this model: 
+	<ol>
+	<li>Growth is never inhibited by any density effects (i.e. the population never runs out of space or resources).  This assumption is only valid during the early stages of population growth.
+	<li>Population size is continuous (i.e. a real number, rather than an integer).  This assumption is approximately correct for large populations.
+	<li>All members of the population have the same growth rate.  For heterogeneous, biological populations, growth rates are likely to vary slightly within populations (e.g. from cell to cell).</li>
+	<li>Growth rate is constant with time.  Even if environmental conditions (on which expected growth rates depend), like temperature for example, are kept constant, actual rates of division may fluctuate with time.  However, for a sufficiently large population, average growth rate will describe population-level dynamics well.</li>
+	</ol>
+	</p>
+	
+	<p>The continuous, deterministic logistic model eliminates the need to make the first assumption above by incorporating density-dependent growth inhibition.  It introduces a new concept: population carrying capacity, described by a new model parameter $K$.  Carrying capacity is the maximum population size that can be supported (given, say, environmental nutrient constraints, or space constraints).  We can think of the logistic model ODE (below) as being the same as the exponential model ODE, but with growth rate multiplied by an inhibition term.  The value of the inhibition term is approximately 1 when the population is "small" (e.g. when $N << K$), but as $N$ approaches $K$, the inhibition term (and therefore the population growth rate) approaches zero asymptotically.  Population size $N$ approaches carrying capacity $K$ asymptotically as $N = K$ is a stable, attractive fixed point for the system.</p>
+	
+	$\frac{dN}{dt} = r N\left ( 1-\frac{N}{K} \right )$
+
+	<p>The logistic model ODE has an analytical solution.  Solving this simple ODE is a good exercise in integration by parts.</p>
+	
+	$N(t) = \frac{K N_0 e^{rt}}{K + N_0 \left( e^{rt} - 1\right)}$
+	
+	<br></br>
+	
+	<h2>An algorithm for discrete, stochastic simulation</h2>
+	
+	<p>In this section $N$ will be an integer, representing number of cells.  To carry out discrete event simulation of the logistic model, we need to be able to write down the hazard function for the probability that a cell divides in an infinitesimally small window of time about time $t$.  The hazard is constant between divisions and modelling it will allow us to estimate the time between cell divisions.  We will update cell number by simulating the time between cell divisions, incrementing the population size by one at each division and continuing until a termination condition is met.  In this case, we will terminate simulation when the population reaches its carrying capacity.</p>
+	
+	<p><a href="http://dx.doi.org/10.1016%2F0021-9991%2876%2990041-3">Gillespie (1977)</a> shows us how to use a wide range of hazard functions derived from zeroth, first or second order rate expressions for reactions in a chemical network.  It is possible to derive the logistic equation assuming cells consume nutrients by mass action reaction kinetics (I'll write another post about this soon), and this makes it more clear why the carrying capacity $K$ should be included in the hazard function.  For now, let us accept that the RHS of the logistic model ODE above is an appropriate hazard function for discrete stochastic simulation, describing the dependance of the probability of a cell division occuring on the number of cells in the population and on the model parameters.</p>
+	
+	$h(N,r,K) = r N\left ( 1-\frac{N}{K} \right )$
+	
+	<p>Starting at $t = 0$ and given an initial population size (the number of cells in the culture inoculum $N(0) = N_0$) we can simulate the time to the next cell division, given the above hazard function, by sampling from an exponential distribution:</p>
+	
+	$\delta t \sim{ Exp(h(N,r,K))}$
+	
+	<p>Then we can update the simulated time and population size computationally:</p>
+	
+	$t = t + \delta t\\
+	N = N + 1$
+
+	<p>We repeat these two steps until the population has reached its carrying capacity, i.e. while $N < K$.  Ensembles of simulated realisations from this model are shown in the plot below.</p>
+	
+	<IMG src="DiscreteStochasticLogistic/Simulations1.png" title="Logistic model simulations">
+	<p style="font-size: 75%;"><b>Logistic model simulations</b>  100 discrete stochastic simulations from the logisitic model of growth from an inoculum of one cell ($N_0 = 1$) to a carrying capacity of 100 cells ($K = 100$) for a slow growing strain (pink, $r = 3$) and a fast-growing strain (grey, $r = 10$).  Deterministic simulations using the same parameter values are overlaid in red and black respectively.</b>
+	
+	<p>There is one feature unique to the logistic model that allows us to carry out relatively efficient simulation: we can calculate the total number of events (e.g. cell divisions) which will occur <i>a priori</i> ($K-N_0$).  This allows us to generate all the random numbers required for stochastic simulation at once, which in turn allows vectorised calls to random number generators.  Generating random numbers in vectorised calls is useful for carrying out simulations in high-level programming languages such as <a href="http://www.r-project.org/">R</a> or <a href="http://www.python.org/">Python</a> where vectorised operations are many times faster than the equivalent for loops.  The R function below is quite fast, simulating a cell population with a carrying capacity of 1.6 million cells (corresponding to a realistic pinned yeast culture growing on CSM solid agar for example) in about half a second.</p>
+	
+<div style="overflow:auto;"><div class="geshifilter"><pre class="r geshifilter-R" style="font-family:monospace;">simCells=<a href="http://inside-r.org/r-doc/base/function"><span style="color: #003399; font-weight: bold;">function</span></a><span style="color: #009900;">&#40;</span>K<span style="color: #339933;">,</span>r<span style="color: #339933;">,</span>N0<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#123;</span>
+	<span style="color: #666666; font-style: italic;"># Unusually, for this model, we know the number of events a priori</span>
+	eventNo=K<span style="">-</span>N0
+	<span style="color: #666666; font-style: italic;"># So we can just generate all required random numbers (quickly) in one go</span>
+	unifs=<a href="http://inside-r.org/r-doc/stats/runif"><span style="color: #003399; font-weight: bold;">runif</span></a><span style="color: #009900;">&#40;</span>eventNo<span style="color: #009900;">&#41;</span>
+	<span style="color: #666666; font-style: italic;"># Every event produces one cell and consumes one unit of nutrients</span>
+	clist=<span style="color: #009900;">&#40;</span>N0<span style="">+</span><span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span><span style="">:</span>K
+	<span style="color: #666666; font-style: italic;"># Simulate time between events by generating </span>
+        <span style="color: #666666; font-style: italic;"># exponential random numbers using the inversion method</span>
+	dts=<span style="">-</span><a href="http://inside-r.org/r-doc/base/log"><span style="color: #003399; font-weight: bold;">log</span></a><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;">1</span><span style="">-</span>unifs<span style="color: #009900;">&#41;</span><span style="">/</span><span style="color: #009900;">&#40;</span>r<span style="">*</span>clist<span style="">*</span><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;">1</span><span style="">-</span>clist<span style="">/</span>K<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
+	<a href="http://inside-r.org/r-doc/base/return"><span style="color: #003399; font-weight: bold;">return</span></a><span style="color: #009900;">&#40;</span><a href="http://inside-r.org/r-doc/base/data.frame"><span style="color: #003399; font-weight: bold;">data.frame</span></a><span style="color: #009900;">&#40;</span><a href="http://inside-r.org/r-doc/base/t"><span style="color: #003399; font-weight: bold;">t</span></a>=<a href="http://inside-r.org/r-doc/base/c"><span style="color: #003399; font-weight: bold;">c</span></a><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;">0</span><span style="color: #339933;">,</span><a href="http://inside-r.org/r-doc/base/cumsum"><span style="color: #003399; font-weight: bold;">cumsum</span></a><span style="color: #009900;">&#40;</span>dts<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">,</span><a href="http://inside-r.org/r-doc/base/c"><span style="color: #003399; font-weight: bold;">c</span></a>=<a href="http://inside-r.org/r-doc/base/c"><span style="color: #003399; font-weight: bold;">c</span></a><span style="color: #009900;">&#40;</span>N0<span style="color: #339933;">,</span>clist<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
+<span style="color: #009900;">&#125;</span></pre></div></div><p><a href="http://www.inside-r.org/pretty-r" title="Created by Pretty R at inside-R.org">Created by Pretty R at inside-R.org</a></p>
+
+<p>The code snippet above works by generating a $K-N_0$ $U(0,1)$ random numbers and a list of cell numbers ($N$) present after each division event, combining the list of cell numbers and the parameter values to calculate the hazard for each $N$ and finally, using the <a href="http://en.wikipedia.org/wiki/Inverse_transform_sampling">inversion method</a> to generate an sample from the exponential distribution with rate parameter equal to the hazard.</p>
+
+<h2>Conclusion</h2>
+
+<p>I'm particularly interested in applying this simple function to understanding population growth curves initiated from single cells.  The plot above demonstrates the very wide range of different growth curves that this model produces for simulated cultures inoculated from a single cell.  In particular, slow growing strains, whose probability of dividing is lower at a given time, are affected strongly by discrete stochastic effects during the first few divisions.  This results in the much wider spread of the pink curves than than the grey in the above figure.  Fitting a deterministic model to these stochastic realisations is likely to give an artificially high estimate of the variability of the growth rate parameter $r$, for example.</p>
+
+<p>This function is also reasonably efficient and is unusual in that it is fully vectorised.  This allows exploration of discrete stochastic logistic model simulations in high-level languages such as R and Python, allowing rapid prototyping of inference and simulation workflows for example.</p>
+
+</article>
 
 <article>
 

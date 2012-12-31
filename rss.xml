@@ -5,6 +5,15 @@
  <link>http://cnr.lwlss.net</link>
  <description>Articles on topics like mathematical modelling, programming, video making, photography, general rants and anything else that springs to mind.</description>
  <language>en</language>
+ 
+ <item>
+ <title>A discrete, stochastic, logistic population model</title>
+ <link>http://cnr.lwlss.net/DiscreteStochasticLogistic</link>
+ <description>
+ In this article, I will present a simple, discrete, stochastic version of the logistic population model and a convenient function for carrying out dynamic simulations from this model.  The discrete, stochastic version of the logistic model is relevant for any growth process initialised with small populations.  For example, in biology, the analysis of growth curves for clonal cell cultures derived from single cells is attractive for several technical reasons, but growth curves are likely to be very difficult to interpret with a continuous, deterministic modelling framework.  This is because during the first several population doublings, the system is discrete (low integer numbers of cells) and unmodelled environmental variability and cell-to-cell heterogeneity are likely to cause strongly stochastic effects on cell division.
+ </description>
+ </item>
+ 
 <item>
  <title>Redesign</title>
  <link>http://cnr.lwlss.net/Redesign</link>
