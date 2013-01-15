@@ -1,0 +1,53 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+	<head>
+    <title>Mass action and the logistic population model</title>
+    <meta charset='utf-8'>
+	<meta content="" name="description"/>
+	<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+	</link></link></meta>
+	<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+	</head>
+
+	<body>
+	<article>
+	<h1>Mass action and the logistic population model</h1>
+	<time datetime="2013-01-15T22:26:25Z">22:26 Tuesday 15th January 2013</time>
+	
+	<p>In a <a href="http://cnr.lwlss.net/DiscreteStochasticLogistic/">previous article</a> I described the discrete stochastic logistic model of population growth.  I am particularly interested in modelling populations of cells dividing until they run out of cells or nutrients.  I showed how to construct the logistic model as an adaptation of an exponential growth model with an extra density-dependent term.  I assumed that the hazard function for the discrete stochastic version of the logistic model is the same as in the deterministic case</p>.
+	
+	<p>In this article I will show that the logistic model can be modelled as a single batch, biochemical reaction between cells and nutrients to produce more cells.  This allows us to easily write the logistic model in a standard, computer-readable format: <a href="http://sbml.org/">SBML</a>, which in turn allows us to use tools for simulating biochemical reaction networks to carry out deterministic or stochastic simulations of the growth of such populations.  Writing the logistic model in terms of second order mass action kinetics also allows us to be very clear about the assumptions underlying the model, as the <a href="http://en.wikipedia.org/wiki/Statistical_mechanics">theory</a> behind chemical reactions obeying mass action models is well established.</p>
+
+	<h2>The logistic model as a biochemical reaction</h2>
+	<p>We can think about the construction of the logistic model ODE in a different way: by considering a simple chemical reaction between cells and nutrients, which obeys mass-action kinetics.  We have to make the usual approximations about perfect mixing for this to apply.
+	
+	rxns
+	Cell + Nut -> 2*Cell
+	[Cell]' = r[Cell][Nut]
+	[Nut]' = -r[Cell][Nut]
+	
+	conservation of mass
+	[Cell+Nut]' = 0
+	[Cell]+[Nut] = c
+	NCell + NNut = c
+	NCell(0) + NNut(0) = c
+	NCell0 + (K - NCell0) = c
+	c = K
+	
+	NCell + NNut = K
+	
+	NCell' = (r/K)*NCell*(K-NCell)  <-- We can carry out discrete stochastic simulation with this form of the equation, based on mass action kinetics. 
+	NCell' = r*NCell*(1-NCell/K)    <-- But we can also have the more traditional form</p>
+	
+	
+</article>
+</body>	
+</html>
