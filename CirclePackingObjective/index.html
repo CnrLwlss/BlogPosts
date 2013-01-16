@@ -7,50 +7,54 @@
 <meta content="" name="description"/>
 <link href="../CLstyle.css" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
-</link></link></meta></head>
-<body><header><h1>Testing optimisation algorithms: Part I - A circle packing objective function</h1><time datetime="2011-09-04T12:57:00Z">12:57 Sunday 4th September 2011</time></header><article>Many mathematical modelling problems I face can be boiled down to constrained, multi-dimensional, global optimisation problems.  Typically I have some model, with several parameters and some noisy data.  I describe the relationship between the goodness-of-fit of a model to some data and the parameter values in the model as a mathematical function (an objective function) which I can then maximise within feasible parameter ranges.  See my <a href="http://cnr.lwlss.net/Oscillations">last post</a> for an example of fitting a sine wave model to some made-up data.
-<br/>
-<br/>The more parameters there are in the model, the harder the optimisation problem (particularly if there are few data!).  Computational optimisation can take up a lot of <a href="http://en.wikipedia.org/wiki/Central_processing_unit">CPU</a> time, but maybe that's ok?  CPUs get <a href="http://en.wikipedia.org/wiki/Moore's_law">faster</a> all the time, so maybe we can just wait for our next computer and the problem will go away naturally?  Actually, over the past few years it has become apparent that individual CPUs are not really getting any faster, but <a href="http://www.economist.com/node/18750706">instead</a> we are seeing increased performance from computers and other devices through increased number of cores (effective CPUs) per device rather than increased speed per CPU.  This shift in computational architecture represents a significant general programming challenge: how can we split up our problems to be solved by several independent CPUs and merge the resulting pieces efficiently?  
-<br/>
-<br/>This general problem is relevant for optimisation too.  I recently built a new desktop computer.  It has 6 cores, and with hyperthreading is capable of emulating 12 cores.  How can I use all of these CPUs effectively to solve problems?  To explore this, over the last few days, I've been looking at some optimisation libraries (so far in <a href="http://www.python.org/">Python</a> and <a href="http://www.r-project.org/">R</a>) in the hope of finding a satisfactory answer to this question.  I will continue investigating and outline the results at a later date, but for now I want to present the optimisation problem that I am using for testing.
-<br/>
-<br/><b>Packing circles into a rectangle</b>
-<br/>
-<br/>Consider N circles fully enclosed by a rectangle of width W and height H.  The problem is to maximise the area enclosed by the circles while ensuring they do not overlap each other, or cross the box boundaries.  Let each circle i have centre coordinates (xi,yi) and radius ri.  We can write down the objective function (the fractional area enclosed by the circles, or packing density), which depends on xi,yi and ri, as:
-<br/>
-<br/><a href="http://www.codecogs.com/eqnedit.php?latex=f(\overline{x})=\frac{ \pi\sum_{i=1}^{N} r_{i}^{2} }{WH}" target="_blank"><img src="http://latex.codecogs.com/gif.latex?f(\overline{x})=\frac{ \pi\sum_{i=1}^{N} r_{i}^{2} }{WH}" title="f(\overline{x})=\frac{ \pi\sum_{i=1}^{N} r_{i}^{2} }{WH}"/></a>
-<br/>
-<br/>subject to (xi,ri) being at least ri away from the rectangle edges (4*N linear inequality constraints):
-<br/>
-<br/><a href="http://www.codecogs.com/eqnedit.php?latex=\begin{align*} g_{1,i}(\overline{x})&amp;=x_{i}@plus;r_{i}-W\geq 0 \\ g_{2,i}(\overline{x})&amp;=y_{i}@plus;r_{i}-H\geq 0 \\ g_{3,i}(\overline{x})&amp;=r_{i}-x_{i}\geq 0 \\ g_{4,i}(\overline{x})&amp;=r_{i}-y_{i}\geq 0 \\ \end{align} \forall i=1,...,N" target="_blank"><img src="http://latex.codecogs.com/gif.latex?\begin{align*} g_{1,i}(\overline{x})&amp;=x_{i}+r_{i}-W\geq 0 \\ g_{2,i}(\overline{x})&amp;=y_{i}+r_{i}-H\geq 0 \\ g_{3,i}(\overline{x})&amp;=r_{i}-x_{i}\geq 0 \\ g_{4,i}(\overline{x})&amp;=r_{i}-y_{i}\geq 0 \\ \end{align} \forall i=1,...,N" title="\begin{align*} g_{1,i}(\overline{x})&amp;=x_{i}+r_{i}-W\geq 0 \\ g_{2,i}(\overline{x})&amp;=y_{i}+r_{i}-H\geq 0 \\ g_{3,i}(\overline{x})&amp;=r_{i}-x_{i}\geq 0 \\ g_{4,i}(\overline{x})&amp;=r_{i}-y_{i}\geq 0 \\ \end{align} \forall i=1,...,N"/></a>
-<br/>
-<br/>and subject to no overlap between any circles (N*(1-N/2) non-linear inequality constraints):
-<br/>
-<br/><a href="http://www.codecogs.com/eqnedit.php?latex=g_{5,i,j}(\overline{x})=r_i@plus;r_j-\sqrt{(x_i-x_j)^2@plus;(y_i-y_j)^2 }\geq0 \hspace{10} \forall i,j \hspace{10} i=1,...,N \hspace{10} i\neq j" target="_blank"><img src="http://latex.codecogs.com/gif.latex?g_{5,i,j}(\overline{x})=r_i+r_j-\sqrt{(x_i-x_j)^2+(y_i-y_j)^2 }\geq0 \hspace{10} \forall i,j \hspace{10} i=1,...,N \hspace{10} i\neq j" title="g_{5,i,j}(\overline{x})=r_i+r_j-\sqrt{(x_i-x_j)^2+(y_i-y_j)^2 }\geq0 \hspace{10} \forall i,j \hspace{10} i=1,...,N \hspace{10} i\neq j"/></a>
-<br/>
-<br/>The idea here is to maximise f, by choosing xi, yi and ri while obeying the constraints g1,...,g5.  We can also consider a simpler variant where instead of choosing xi, yi and ri, we only choose xi and yi, and "inflate" each circle with a deterministic algorithm to satisfy constraint g5.  This variant has only linear constraints and only 2*N parameters (instead of 3*N), but has an algorithmic objective function f.
-<br/>
-<br/>These examples are useful, since a global optimum solution (where N is also allowed to vary) is <a href="http://mathworld.wolfram.com/CirclePacking.html">known</a>, giving us some idea of achievable packing densities.  Also, it is trivial to increase the number of parameters to make the problem arbitrarily more difficult (simply increase the number of circles N).
-<br/>
-<br/>For now, here are some examples of some (sub-optimally) packed circles:
-<br/>
-<br/>N=10, f=0.6622
+</link></link></meta>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script></head>
+<body><header><h1>Testing optimisation algorithms: Part I - A circle packing objective function</h1><time datetime="2011-09-04T12:57:00Z">12:57 Sunday 4th September 2011</time></header>
+
+<article>
+<p>Many mathematical modelling problems I face can be boiled down to constrained, multi-dimensional, global optimisation problems.  Typically I have some model, with several parameters and some noisy data.  I describe the relationship between the goodness-of-fit of a model to some data and the parameter values in the model as a mathematical function (an objective function) which I can then maximise within feasible parameter ranges.  See my <a href="http://cnr.lwlss.net/Oscillations">last post</a> for an example of fitting a sine wave model to some made-up data.
+</p>
+<p>The more parameters there are in the model, the harder the optimisation problem (particularly if there are few data!).  Computational optimisation can take up a lot of <a href="http://en.wikipedia.org/wiki/Central_processing_unit">CPU</a> time, but maybe that's ok?  CPUs get <a href="http://en.wikipedia.org/wiki/Moore's_law">faster</a> all the time, so maybe we can just wait for our next computer and the problem will go away naturally?  Actually, over the past few years it has become apparent that individual CPUs are not really getting any faster, but <a href="http://www.economist.com/node/18750706">instead</a> we are seeing increased performance from computers and other devices through increased number of cores (effective CPUs) per device rather than increased speed per CPU.  This shift in computational architecture represents a significant general programming challenge: how can we split up our problems to be solved by several independent CPUs and merge the resulting pieces efficiently?</p>
+
+<p>This general problem is relevant for optimisation too.  I recently built a new desktop computer.  It has 6 cores, and with hyperthreading is capable of emulating 12 cores.  How can I use all of these CPUs effectively to solve problems?  To explore this, over the last few days, I've been looking at some optimisation libraries (so far in <a href="http://www.python.org/">Python</a> and <a href="http://www.r-project.org/">R</a>) in the hope of finding a satisfactory answer to this question.  I will continue investigating and outline the results at a later date, but for now I want to present the optimisation problem that I am using for testing.</p>
+
+<h2>Packing circles into a rectangle</h2>
+
+<p>Consider N circles fully enclosed by a rectangle of width W and height H.  The problem is to maximise the area enclosed by the circles while ensuring they do not overlap each other, or cross the box boundaries.  Let each circle $i$ have centre coordinates $(x_i,y_i)$ and radius $r_i$.  We can write down the objective function (the fractional area enclosed by the circles, or packing density), which depends on $x_i$,$y_i$ and $r_i$, as:</p>
+
+$f(\overline{x})=\frac{ \pi\sum_{i=1}^{N} r_{i}^{2} }{WH}$
+
+<p>subject to $(x_i,r_i)$ being at least $r_i$ away from the rectangle edges ($4N$ linear inequality constraints):</p>
+
+$\begin{align}
+g_{1,i}(\overline{x})&=x_{i}+r_{i}-W\geq 0\\
+g_{2,i}(\overline{x})&=y_{i}+r_{i}-H\geq 0\\
+g_{3,i}(\overline{x})&=r_{i}-x_{i}\geq 0\\
+g_{4,i}(\overline{x})&=r_{i}-y_{i}\geq 0\\
+\end{align}
+\forall i=1,...,N
+$
+
+<p>and subject to no overlap between any circles ($N(1-N/2)$ non-linear inequality constraints):</p>
+
+$g_{5,i,j}(\overline{x})=r_i+r_j-\sqrt{(x_i-x_j)^2+(y_i-y_j)^2 }\geq 0 \hspace{1em} \forall i,j \hspace{1em} i=1,...,N \hspace{1em} i\neq j$
+
+<p>The idea here is to maximise $f$, by choosing $x_i$, $y_i$ and $r_i$ while obeying the constraints $g_1,...,g_5$.  We can also consider a simpler variant where instead of choosing $x_i$, $y_i$ and $r_i$, we only choose $x_i$ and $y_i$, and "inflate" each circle with a deterministic algorithm to satisfy constraint $g_5$.  This variant has only linear constraints and only $2N$ parameters (instead of $3N$), but has an algorithmic objective function $f$.</p>
+
+<p>These examples are useful, since a global optimum solution (where $N$ is also allowed to vary) is <a href="http://mathworld.wolfram.com/CirclePacking.html">known</a>, giving us some idea of achievable packing densities.  Also, it is trivial to increase the number of parameters to make the problem arbitrarily more difficult (simply increase the number of circles $N$).</p>
+
+<p>For now, here are some examples of some (sub-optimally) packed circles:
+
+<p>N=10, f=0.6622
 <br/><a href="http://www.flickr.com/photos/conchur/6112206846/" title="C by Conor Lawless, on Flickr"><img alt="C" height="203" src="http://farm7.static.flickr.com/6076/6112206846_d0df4abf25.jpg" width="500"/></a>
-<br/>
-<br/>N=50, f=0.7517
+</p>
+<p>N=50, f=0.7517
 <br/><a href="http://www.flickr.com/photos/conchur/6111661273/" title="C1 by Conor Lawless, on Flickr"><img alt="C1" height="203" src="http://farm7.static.flickr.com/6083/6111661273_3aee864f08.jpg" width="500"/></a>
-<br/>
-<br/>N=100, f=0.7563
+</p>
+<p>N=100, f=0.7563
 <br/><a href="http://www.flickr.com/photos/conchur/6112207036/" title="C2 by Conor Lawless, on Flickr"><img alt="C2" height="203" src="http://farm7.static.flickr.com/6204/6112207036_f4a0d3b9a5.jpg" width="500"/></a>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/></article></body>
+</p>
+</article>
+</body>
 </html>
