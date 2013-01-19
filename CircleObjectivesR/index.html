@@ -7,294 +7,34 @@
 <meta content="" name="description"/>
 <link href="../CLstyle.css" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
-</link></link></meta></head>
+</link></link></meta>
+	<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
 
 <body><header><h1>Testing optimisation algorithms: Part II - Implementing objective function in R</h1><time datetime="2011-09-07T22:16:00Z">22:16 Wednesday 7th September 2011</time></header>
 
-<article>In <a href="http://cnr.lwlss.net/CirclePackingObjective">Part I</a> I presented the reasons I'm interested in optimisation, and gave a mathematical statement of the example constrained optimisation problem I will solve.  In this post, I am going to present two practical implementation algorithms, coded in <a href="http://www.r-project.org/">R</a>.  I'll also present an R function for visualising the resultant circles.
-<br/><p>The code can be found at the end of this post, it's fairly well commented, so just some general comments first:</p>
-<br/><p>Most optimisation functions take a single vector of parameter values as an argument.  This is a bit unwieldy for our problem, since we have N triplets of x,y and r.  Here I arbitrarily define a parameter vector z, of length 3*N and split it up (consistently) into vectors for x, y and r.</p>
-<br/><p><a href="http://www.r-project.org/">R</a> has a convenient combinatorics facility, so I use that to generate a unique list of all possible circle pairs to optimise the calculations required for constraint g5.</p>
-<br/><p>I'm using function closures here to avoid defining global variables.  In <a href="http://www.r-project.org/">R</a>, a function closure is a function which returns another function but with its own environment for storing variables etc., which can be initialised within the outer function before returning the inner function.  For example, I have created a function createObj which initialises the number of circles N, and the rectangle dimensions (W and H), generates a unique list of circle pairs (cpairs) and creates a function newObj which only depends on z, but nevertheless has access to private copies of N, W, H and clist. </p>
-<br/><p>Here, constraints are embedded into the objective function.  A numerical value is associated with constraint violation and is subtracted from the objective function we are trying to maximise.  There are two alternative versions of the objective function closures in the code below: createObj is "soft", the constraint violation values are the sum of the square of the magnitude of violations, createHardObj is "hard", any single violated constraint, no matter how small, returns in an area of -Infinity.  In the first case, a derivative based algorithm will always be able to figure out a path towards satisfying constraints if it finds itself in a region where they are violated, but small violations may be tolerated in the final solution.  In the latter case, all constraints must be completely obeyed, but on the other hand, there are no hints about how to improve from an invalid set of parameters.</p>
-<br/><p>The drawCircles function can plot circles to screen, or in vector graphics format (to a .pdf for example).  Here are some outputs generated with this function (initial guess on left, optimised result on right):</p>
-<br/><p><a href="http://www.flickr.com/photos/conchur/6125381370/" title="CirclePackingCircles by Conor Lawless, on Flickr"><img alt="CirclePackingCircles" height="1024" src="http://farm7.static.flickr.com/6196/6125381370_5a4268fd54_b.jpg" width="477"/></a></p>
+<article>
+
+<p>In <a href="http://cnr.lwlss.net/CirclePackingObjective">Part I</a> of this series, I presented the reasons I'm interested in optimisation, and gave a mathematical statement of the example constrained optimisation problem I will solve.  In this post, I am going to present two practical implementation algorithms, coded in <a href="http://www.r-project.org/">R</a>.  I'll also present an R function for visualising the resultant circles.</p>
+
+<p>Code for optimisation and visualisation can be found at the end of this post.  It's fairly well commented, so just some general comments first:</p>
+
+<p>Most optimisation functions take a single vector of parameter values as an argument.  This is a bit unwieldy for our problem, since we have N triplets of x,y and $r$.  Here I arbitrarily define a parameter vector z, of length 3N and split it up (consistently) into vectors for x, y and r.</p>
+
+<p><a href="http://www.r-project.org/">R</a> has a convenient combinatorics facility, so I use that to generate a unique list of all possible circle pairs to optimise the calculations required for constraint $g_5$.</p>
+
+<p>I'm using function closures here to avoid defining global variables.  In <a href="http://www.r-project.org/">R</a>, a function closure is a function which returns another function, together with its own environment for storing variables etc., which can be initialised within the outer function before returning the inner function.  For example, I have created a function <i>createObj</i> which initialises the number of circles N, and the rectangle dimensions (W and H), generates a unique list of circle pairs (<i>cpairs</i>) and creates a function <i>newObj</i> which only depends on z, but nevertheless has access to private copies of N, W, H and clist. </p>
+
+<p>Here, constraints are embedded into the objective function.  A numerical value quantifying constraint violation is subtracted from the objective function we are trying to maximise.  There are two alternative versions of the objective function closures in the code below: <i>createObj</i> is "soft", the constraint violation values are the sum of the square of the magnitude of violations, <i>createHardObj</i> is "hard", any single violated constraint, no matter how small, returns in an area of -Infinity.  In the first case, a derivative based algorithm will always be able to figure out a path towards satisfying constraints if it finds itself in a region where they are violated, but small violations may be tolerated in the final solution.  In the latter case, all constraints must be completely obeyed and so any solution will be perfect, but on the other hand, there are no hints about how to improve from an invalid set of parameters, and so finding a solution is much more difficult.</p>
+
+<p>The drawCircles function can plot circles to screen, or in vector graphics format (to a .pdf for example).  Here are some outputs generated with this function (initial guess on left, optimised result on right):</p>
+
+<p><a href="http://www.flickr.com/photos/conchur/6125381370/" title="CirclePackingCircles by Conor Lawless, on Flickr"><img alt="CirclePackingCircles" height="1024" src="http://farm7.static.flickr.com/6196/6125381370_5a4268fd54_b.jpg" width="477"/></a></p>
+
 <br/><p>Finally, the optimisation routine presented here just uses the <a href="http://en.wikipedia.org/wiki/Limited-memory_BFGS">L-BFGS-B</a> method which is a pretty good, bounded, derivative-based optimiser, which is made available within the <a href="http://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html">optim</a> function which is standard in <a href="http://www.r-project.org/">R</a> installations (it's part of the core).  It's fairly slow for more than 100 circles, and the results are not perfect, as circles are often forced to the edge of the box with negligble radii.  Nevertheless, it's a good start.</p>
-<br/><p><!-- HTML generated using hilite.me --><br/>
-<br/><div style="background: #f8f8f8; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;">
-<br/><table>
-<br/><tr>
-<br/><td>
-<br/><pre style="margin: 0; line-height: 125%">  1
-<br/>  2
-<br/>  3
-<br/>  4
-<br/>  5
-<br/>  6
-<br/>  7
-<br/>  8
-<br/>  9
-<br/> 10
-<br/> 11
-<br/> 12
-<br/> 13
-<br/> 14
-<br/> 15
-<br/> 16
-<br/> 17
-<br/> 18
-<br/> 19
-<br/> 20
-<br/> 21
-<br/> 22
-<br/> 23
-<br/> 24
-<br/> 25
-<br/> 26
-<br/> 27
-<br/> 28
-<br/> 29
-<br/> 30
-<br/> 31
-<br/> 32
-<br/> 33
-<br/> 34
-<br/> 35
-<br/> 36
-<br/> 37
-<br/> 38
-<br/> 39
-<br/> 40
-<br/> 41
-<br/> 42
-<br/> 43
-<br/> 44
-<br/> 45
-<br/> 46
-<br/> 47
-<br/> 48
-<br/> 49
-<br/> 50
-<br/> 51
-<br/> 52
-<br/> 53
-<br/> 54
-<br/> 55
-<br/> 56
-<br/> 57
-<br/> 58
-<br/> 59
-<br/> 60
-<br/> 61
-<br/> 62
-<br/> 63
-<br/> 64
-<br/> 65
-<br/> 66
-<br/> 67
-<br/> 68
-<br/> 69
-<br/> 70
-<br/> 71
-<br/> 72
-<br/> 73
-<br/> 74
-<br/> 75
-<br/> 76
-<br/> 77
-<br/> 78
-<br/> 79
-<br/> 80
-<br/> 81
-<br/> 82
-<br/> 83
-<br/> 84
-<br/> 85
-<br/> 86
-<br/> 87
-<br/> 88
-<br/> 89
-<br/> 90
-<br/> 91
-<br/> 92
-<br/> 93
-<br/> 94
-<br/> 95
-<br/> 96
-<br/> 97
-<br/> 98
-<br/> 99
-<br/>100
-<br/>101
-<br/>102
-<br/>103
-<br/>104
-<br/>105
-<br/>106
-<br/>107
-<br/>108
-<br/>109
-<br/>110
-<br/>111
-<br/>112
-<br/>113
-<br/>114
-<br/>115
-<br/>116
-<br/>117
-<br/>118
-<br/>119
-<br/>120
-<br/>121
-<br/>122
-<br/>123
-<br/>124
-<br/>125
-<br/>126
-<br/>127
-<br/>128
-<br/>129
-<br/>130
-<br/>131
-<br/>132
-<br/>133</pre></td>
-<br/><td>
-<br/><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">###########</span>
-<br/><span style="color: #408080; font-style: italic"># Optimum circle packing in R</span>
-<br/><span style="color: #408080; font-style: italic">###########</span>
-<br/>
-<br/><span style="color: #408080; font-style: italic"># Function closure, sets up list of possible combinations</span>
-<br/><span style="color: #408080; font-style: italic"># and returns objective function</span>
-<br/>createObj<span style="color: #666666">&lt;-</span><span style="color: #008000; font-weight: bold">function</span>(N,W,H){
-<br/>
-<br/>print(<span style="color: #BA2121">&quot;Generating combinations...&quot;</span>)
-<br/><span style="color: #408080; font-style: italic"># Generate all possible circle pairings</span>
-<br/>cpairs<span style="color: #666666">=</span>data.frame(t(combn(<span style="color: #666666">1</span>:N,<span style="color: #666666">2</span>)))
-<br/>colnames(cpairs)<span style="color: #666666">=</span>c(<span style="color: #BA2121">&quot;A&quot;</span>,<span style="color: #BA2121">&quot;B&quot;</span>)
-<br/>print(<span style="color: #BA2121">&quot;Combinations complete.&quot;</span>)
-<br/>
-<br/><span style="color: #008000; font-weight: bold">return</span>({
-<br/>	newObj<span style="color: #666666">&lt;-</span><span style="color: #008000; font-weight: bold">function</span>(z){
-<br/>		<span style="color: #408080; font-style: italic"># This vector is split up into triplets of x,y,r </span>
-<br/>		<span style="color: #408080; font-style: italic"># z[1],z[2],z[3] -&gt; x1,y1,r1</span>
-<br/>		x<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-2</span>]
-<br/>		y<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-1</span>]
-<br/>		r<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-0</span>]
-<br/>
-<br/>		res<span style="color: #666666">=0</span>
-<br/>		<span style="color: #408080; font-style: italic"># Some linear inequality constraints to be satisfied</span>
-<br/>		c1<span style="color: #666666">=</span>x<span style="color: #666666">+</span>r<span style="color: #666666">-</span>W <span style="color: #408080; font-style: italic"># &lt;0	</span>
-<br/>		c2<span style="color: #666666">=</span>y<span style="color: #666666">+</span>r<span style="color: #666666">-</span>H <span style="color: #408080; font-style: italic"># &lt;0</span>
-<br/>		c3<span style="color: #666666">=</span>r<span style="color: #666666">-</span>x <span style="color: #408080; font-style: italic"># &lt;= 0</span>
-<br/>		c4<span style="color: #666666">=</span>r<span style="color: #666666">-</span>y <span style="color: #408080; font-style: italic"># &lt;=0</span>
-<br/>		<span style="color: #408080; font-style: italic"># Many nonlinear inequality constraints</span>
-<br/>		c5<span style="color: #666666">=</span>r[cpairs$A]<span style="color: #666666">+</span>r[cpairs$B]<span style="color: #666666">-</span>sqrt((x[cpairs$A]<span style="color: #666666">-</span>x[cpairs$B])<span style="color: #666666">^2+</span>(y[cpairs$A]<span style="color: #666666">-</span>y[cpairs$B])<span style="color: #666666">^2</span>) <span style="color: #408080; font-style: italic"># &lt;=0</span>
-<br/>
-<br/>		c1<span style="color: #666666">=</span>c1[c1<span style="color: #666666">&gt;0</span>]
-<br/>		c2<span style="color: #666666">=</span>c2[c2<span style="color: #666666">&gt;0</span>]
-<br/>		c3<span style="color: #666666">=</span>c3[c3<span style="color: #666666">&gt;0</span>]
-<br/>		c4<span style="color: #666666">=</span>c4[c4<span style="color: #666666">&gt;0</span>]
-<br/>		c5<span style="color: #666666">=</span>c5[c5<span style="color: #666666">&gt;0</span>]
-<br/>		constraints<span style="color: #666666">=</span>c(c1,c2,c3,c4,c5)
-<br/>		<span style="color: #008000; font-weight: bold">if</span>(length(constraints)<span style="color: #666666">&gt;0</span>){
-<br/>			constraints<span style="color: #666666">=</span>constraints<span style="color: #666666">^2</span>
-<br/>			res<span style="color: #666666">=</span>res<span style="color: #666666">-</span>sum(constraints)
-<br/>		}
-<br/>		
-<br/>		<span style="color: #408080; font-style: italic"># Actual objective function (fraction of area covered)</span>
-<br/>		res<span style="color: #666666">=</span>res<span style="color: #666666">+</span>(pi<span style="color: #666666">*</span>sum(r<span style="color: #666666">^2</span>))<span style="color: #666666">/</span>(W<span style="color: #666666">*</span>H)
-<br/>	
-<br/>		<span style="color: #008000; font-weight: bold">return</span>(<span style="color: #666666">-1*</span>res)
-<br/>	}
-<br/>})
-<br/>}
-<br/>
-<br/><span style="color: #408080; font-style: italic"># Function closure, sets up list of possible combinations</span>
-<br/><span style="color: #408080; font-style: italic"># and returns objective function</span>
-<br/>createHardObj<span style="color: #666666">&lt;-</span><span style="color: #008000; font-weight: bold">function</span>(N,W,H){
-<br/>
-<br/>print(<span style="color: #BA2121">&quot;Generating combinations...&quot;</span>)
-<br/><span style="color: #408080; font-style: italic"># Generate all possible circle pairings</span>
-<br/>cpairs<span style="color: #666666">=</span>data.frame(t(combn(<span style="color: #666666">1</span>:N,<span style="color: #666666">2</span>)))
-<br/>colnames(cpairs)<span style="color: #666666">=</span>c(<span style="color: #BA2121">&quot;A&quot;</span>,<span style="color: #BA2121">&quot;B&quot;</span>)
-<br/>print(<span style="color: #BA2121">&quot;Combinations complete.&quot;</span>)
-<br/>
-<br/><span style="color: #008000; font-weight: bold">return</span>({
-<br/>	newHardObj<span style="color: #666666">&lt;-</span><span style="color: #008000; font-weight: bold">function</span>(z){
-<br/>		<span style="color: #408080; font-style: italic"># This vector is split up into triplets of x,y,r </span>
-<br/>		<span style="color: #408080; font-style: italic"># z[1],z[2],z[3] -&gt; x1,y1,r1</span>
-<br/>		x<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-2</span>]
-<br/>		y<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-1</span>]
-<br/>		r<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-0</span>]
-<br/>
-<br/>		res<span style="color: #666666">=0</span>
-<br/>		<span style="color: #408080; font-style: italic"># Some nonlinear inequality constraints to be satisfied</span>
-<br/>		<span style="color: #008000; font-weight: bold">if</span>(<span style="color: #008000; font-weight: bold">FALSE</span><span style="color: #666666">%in%</span>(x<span style="color: #666666">+</span>r<span style="color: #666666">&lt;</span>W)) res <span style="color: #666666">=</span> Inf
-<br/>		<span style="color: #008000; font-weight: bold">if</span>(<span style="color: #008000; font-weight: bold">FALSE</span><span style="color: #666666">%in%</span>(y<span style="color: #666666">+</span>r<span style="color: #666666">&lt;</span>H)) res <span style="color: #666666">=</span> Inf
-<br/>		<span style="color: #008000; font-weight: bold">if</span>(<span style="color: #008000; font-weight: bold">FALSE</span><span style="color: #666666">%in%</span>(x<span style="color: #666666">-</span>r<span style="color: #666666">&gt;=0</span>)) res <span style="color: #666666">=</span> Inf
-<br/>		<span style="color: #008000; font-weight: bold">if</span>(<span style="color: #008000; font-weight: bold">FALSE</span><span style="color: #666666">%in%</span>(y<span style="color: #666666">-</span>r<span style="color: #666666">&gt;=0</span>)) res <span style="color: #666666">=</span> Inf
-<br/>		<span style="color: #408080; font-style: italic"># Many nonlinear inequality constraints</span>
-<br/>		<span style="color: #008000; font-weight: bold">if</span>(<span style="color: #008000; font-weight: bold">FALSE</span><span style="color: #666666">%in%</span>(((x[cpairs$A]<span style="color: #666666">-</span>x[cpairs$B])<span style="color: #666666">^2+</span>(y[cpairs$A]<span style="color: #666666">-</span>y[cpairs$B])<span style="color: #666666">^2</span>)<span style="color: #666666">&gt;=</span>(r[cpairs$A]<span style="color: #666666">+</span>r[cpairs$B])<span style="color: #666666">^2</span>)) res <span style="color: #666666">=</span> Inf
-<br/>	
-<br/>		<span style="color: #408080; font-style: italic"># Actual objective function (fraction of area covered)</span>
-<br/>		res<span style="color: #666666">=</span>res<span style="color: #666666">+</span>(pi<span style="color: #666666">*</span>sum(r<span style="color: #666666">^2</span>))<span style="color: #666666">/</span>(W<span style="color: #666666">*</span>H)
-<br/>	
-<br/>		<span style="color: #008000; font-weight: bold">return</span>(<span style="color: #666666">-1*</span>res)
-<br/>	}
-<br/>	})
-<br/>}
-<br/>
-<br/><span style="color: #408080; font-style: italic"># Draw circles (centres and radii speficied in df)</span>
-<br/><span style="color: #408080; font-style: italic"># within a bounding rectangle (width * height)</span>
-<br/>drawCircles<span style="color: #666666">&lt;-</span><span style="color: #008000; font-weight: bold">function</span>(df,width,height,colour<span style="color: #666666">=</span><span style="color: #BA2121">&quot;black&quot;</span>,pdfName<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">NULL</span>){
-<br/>	<span style="color: #008000; font-weight: bold">if</span>(is.null(pdfName)){
-<br/>		graphics.off()
-<br/>		dev.new(width<span style="color: #666666">=7</span>, height<span style="color: #666666">=7*</span>height<span style="color: #666666">/</span>width)
-<br/>	}else{
-<br/>		pdf(pdfName,width<span style="color: #666666">=7</span>,height<span style="color: #666666">=7*</span>height<span style="color: #666666">/</span>width)
-<br/>	}
-<br/>	maxdim<span style="color: #666666">=</span>max(width,height)
-<br/>	width<span style="color: #666666">=</span>width<span style="color: #666666">/</span>maxdim
-<br/>	height<span style="color: #666666">=</span>height<span style="color: #666666">/</span>maxdim
-<br/>	df<span style="color: #666666">=</span>df<span style="color: #666666">/</span>maxdim
-<br/>	<span style="color: #408080; font-style: italic"># Change to coordinate system based on centre of rectangle</span>
-<br/>	df$x<span style="color: #666666">=</span>df$x<span style="color: #666666">-</span>width<span style="color: #666666">/2</span>
-<br/>	df$y<span style="color: #666666">=</span>df$y<span style="color: #666666">-</span>height<span style="color: #666666">/2</span>
-<br/>	<span style="color: #408080; font-style: italic"># Draws circles on a square</span>
-<br/>	par(plt<span style="color: #666666">=</span>c(<span style="color: #666666">0</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">1</span>))
-<br/>	plot(<span style="color: #008000; font-weight: bold">NULL</span>,xlim<span style="color: #666666">=</span>c(<span style="color: #666666">-</span>width<span style="color: #666666">/2</span>,width<span style="color: #666666">/2</span>),ylim<span style="color: #666666">=</span>c(<span style="color: #666666">-</span>height<span style="color: #666666">/2</span>,height<span style="color: #666666">/2</span>),axes<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">FALSE</span>,xaxt<span style="color: #666666">=</span><span style="color: #BA2121">'n'</span>,yaxt<span style="color: #666666">=</span><span style="color: #BA2121">'n'</span>,ann<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">FALSE</span>)
-<br/>	symbols(df$x,df$y,circles<span style="color: #666666">=</span>df$r,fg<span style="color: #666666">=</span>colour,bg<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">NA</span>,add<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">TRUE</span>,inches<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">FALSE</span>) 
-<br/>	rect(<span style="color: #666666">-</span>width<span style="color: #666666">/2</span>,<span style="color: #666666">-</span>height<span style="color: #666666">/2</span>,width<span style="color: #666666">/2</span>,height<span style="color: #666666">/2</span>)
-<br/>	<span style="color: #008000; font-weight: bold">if</span>(!is.null(pdfName)) dev.off()
-<br/>}
-<br/>
-<br/><span style="color: #408080; font-style: italic"># Number of circles and dimensions of bounding rectangle </span>
-<br/>N<span style="color: #666666">=13</span>; W<span style="color: #666666">=10</span>; H<span style="color: #666666">=10</span>
-<br/>
-<br/><span style="color: #408080; font-style: italic"># Create objective function</span>
-<br/>obj<span style="color: #666666">=</span>createObj(N,W,H)
-<br/>
-<br/><span style="color: #408080; font-style: italic"># Lowest acceptable values for dimensions or radii (x,y,r) is zero</span>
-<br/>low<span style="color: #666666">=</span>rep(<span style="color: #666666">0</span>,<span style="color: #666666">3*</span>N)
-<br/><span style="color: #408080; font-style: italic"># x can go as high as W, y as high as H</span>
-<br/><span style="color: #408080; font-style: italic"># The biggest allowable circle radius is the smaller of W and H</span>
-<br/>up<span style="color: #666666">=</span>rep(c(W,H,min(W,H)),N)
-<br/><span style="color: #408080; font-style: italic"># Initial guess (random circle coordinates and radii)</span>
-<br/>z<span style="color: #666666">=</span>rep(<span style="color: #666666">0</span>,<span style="color: #666666">3*</span>N)
-<br/>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-2</span>]<span style="color: #666666">=</span>runif(N,<span style="color: #666666">0</span>,W)
-<br/>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-1</span>]<span style="color: #666666">=</span>runif(N,<span style="color: #666666">0</span>,H)
-<br/>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-0</span>]<span style="color: #666666">=</span>runif(N,<span style="color: #666666">0</span>,<span style="color: #666666">0.1*</span>min(W,H))
-<br/>
-<br/>out<span style="color: #666666">=</span>optim(par<span style="color: #666666">=</span>z,fn<span style="color: #666666">=</span>obj,method<span style="color: #666666">=</span><span style="color: #BA2121">&quot;L-BFGS-B&quot;</span>,lower<span style="color: #666666">=</span>low,upper<span style="color: #666666">=</span>up,control<span style="color: #666666">=</span>list(maxit<span style="color: #666666">=2000</span>))
-<br/>cat(<span style="color: #BA2121">&quot;Fractional area:&quot;</span>,<span style="color: #666666">-1*</span>out$value)
-<br/>
-<br/>z<span style="color: #666666">=</span>as.numeric(out$par)
-<br/>x<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-2</span>]; y<span style="color: #666666">=</span>z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-1</span>]; r<span style="color: #666666">=</span>abs(z[<span style="color: #666666">1</span>:N<span style="color: #666666">*3-0</span>])
-<br/>dfA<span style="color: #666666">=</span>data.frame(x<span style="color: #666666">=</span>x,y<span style="color: #666666">=</span>y,r<span style="color: #666666">=</span>r)
-<br/>drawCircles(dfA,W,H)
-<br/></pre></td>
-<br/></tr>
-<br/></table>
-<br/></div>
-<br/> </p></article></body>
+
+<script src="https://gist.github.com/4571810.js"></script>
+
+</article></body>
 </html>
