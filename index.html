@@ -30,7 +30,69 @@
 <a href="./AboutConor" title="Much about me!">about...</a>&nbsp; &nbsp; &nbsp;<a href="./Archive" title="Archive of posts, sorted alphabetically">archive...</a>&nbsp; &nbsp; &nbsp;<a href="http://cnr.lwlss.net/rss.xml" title="RSS feed for reading posts using Google Reader for example">RSS feed...</a>
 </header>
 
-		<article>
+<article>
+	<h1>Mass action and the logistic population model</h1>
+	<time datetime="2013-01-15T22:26:25Z">22:26 Tuesday 15th January 2013</time>
+	
+	<p>In a <a href="http://cnr.lwlss.net/DiscreteStochasticLogistic/">previous article</a> I described the discrete stochastic logistic model of population growth.  I am particularly interested in modelling populations of cells dividing until they run out of space or nutrients.  I showed how to construct the logistic model as an adaptation of an exponential growth model with an extra density-dependent term.  I assumed that the hazard function for the discrete stochastic version of the logistic model is the same as in the deterministic case.</p>
+	
+	<p>In this article I will show that the logistic model can be derived by thinking about a a single, batch, second-order, biochemical reaction between cells and nutrients to produce more cells.  This allows us to easily write the logistic model in a standard, computer-readable, modelling format: <a href="http://sbml.org/">SBML</a>, which in turn allows us to use tools for simulating biochemical reaction networks to carry out deterministic or stochastic simulations of the growth of such populations.  Writing the logistic model in terms of second order mass action kinetics also allows us to be very clear about the assumptions underlying the stochastic version of the model, as the probabilistic <a href="http://en.wikipedia.org/wiki/Statistical_mechanics">theory</a> behind chemical reactions obeying mass action kinetics is well established.</p>
+
+	<h2>The logistic model as a biochemical reaction</h2>
+   
+   $Cell + Nutrient\rightarrow 2 \hspace{0.25em}Cell$
+   
+	<p>We can think about the construction of the logistic model by considering the simple chemical reaction between cells and nutrients above.  We can assume that the above reaction proceeds at a rate determined by the <a href="http://en.wikipedia.org/wiki/Law_of_mass_action">law of mass action</a>.  In order for mass action kinetics to apply, we have to assume that the reactants in the system studied (cells and nutrients in this case) are perfectly mixed, so that we can be confident that the probability of a successful reaction is proportional to the concentration of each reactant.  The mass action theory of chemical kinetics is appropriate for simulating chemical reactions occurring in the gas phase (where fast diffusion of molecules in random directions, colliding randomly ensures good mixing) or in the liquid phase, provided that the liquid solution is well-stirred (e.g. by external, mechanical mixing).  The assumption of mass-action kinetics is less valid in the context of biochemical reactions within cells, where there is a great deal of spatial heterogeneity and no such external mixing process.  It is even less valid when modelling fluctuations in the size of animal populations who do not behave randomly and live in a highly heterogeneous and dynamic environment.  Nevertheless, the same concept of mass-action kinetics has been used during modelling of all of these systems with some success.</p>
+   
+   <p>The validity of assuming mass-action kinetics, when considering the growth of cell populations growing in culture, lies somewhere between the validity of assuming mass-action kinetics when modelling liquid phase chemical reactions and animal populations.  It seems reasonable to assume that microbial cells (unicellular organisms) cultured in well-stirred liquid medium have equal access to remaining nutrients.  However, the same microbial cells growing on a nutrient-rich substrate (like a solid agar surface, for example) move slowly (in the case of bacteria) or are immotile (in the case of yeasts).  Such cells will experience concentration gradients as nutrients diffuse through the substrate or even past other cells before reaching them.  When <a href="http://en.wikipedia.org/wiki/Cell_culture">culturing</a> mammalian fibroblasts <i>in vitro</i> cells are not mixed and form monolayers on the surface of flasks of liquid medium.  Fibroblasts are motile, and have evolved to form tissues and actively seek each other out.  Although their movement relative to each other cannot be described as random, provided they form a thin layer on the flask bottom,movement relative to their nutrients is approximately random.  Yeasts growing on solid surfaces form clonal colonies which spread out in a circle from the original progenitor population, displaced by cell division alone.  Provided that the depth of the yeast colony does not become too great, it seems reasonable to assume that such cells have equal, random access to nutrients from their substrate.</p>
+   
+   <h3>Reaction</h3>
+   <p>Chemical reaction representation of a cell consuming one unit of nutrients to produce one more cell.</p>
+   
+   <p>$Cell + Nutrient\rightarrow 2 \hspace{0.25em}Cell$</p>
+   
+   <h3>Rate expression</h3>
+   
+   <p>Assuming mass-action kinetics, the rate at which the above reaction proceeds depends on the rate constant $r$ and the concentration of cells and nutrients (concentration represented by square brackets).</p>
+   
+   <p>$r[Cell][Nutrient]$</p>
+   
+   <h3>Differential equation representation</h3>
+   
+   <p>Given the above reaction, the dynamic evolution of the concentrations of cells and nutrients in the system can be described by the following two ordinary differential equations:</p>
+   
+   <p>
+   $\frac{d[Cell]}{dt} = r[Cell][Nutrient]\\
+   \frac{d[Nutrient]}{dt} = -r[Cell][Nutrient]$
+   </p>
+   
+   <h3>Defining concentration</h3>
+   <p>The probability of a reaction occurring depends on the concentration of the reactants, not the absolute number of molecules (or cells).  Concentration is, however, proportional to the absolute number of reactants and inversely proportional to the size of the system.  If we choose to measure the size of the system, in this case, as the total number of elements in the system (which remains constant by the law of mass conservation, see below): $K$, we can write the following expressions for concentrations, where $N_i$ is the number of element $i$ in the system:</p>
+   
+   $[Cell]=\frac{N_{Cell}}{K}\\
+   [Nutrient]=\frac{N_{Nutrient}}{K}$
+   
+   <h3>Conservation of mass</h3>
+   
+   <p>We can see from the ODEs above that for every "unit" of nutrients consumed, one "unit" of cells are produced.  Therefore the number of "units" in the system remains constant.  We can call the total number of "units" in the system $K$, and we can see that this will be the maximum number of cells that the system will support.</p>
+   
+   <p>
+   $\frac{dN_{Cell}}{dt}+\frac{dN_{Nutrient}}{dt}=0\\
+   N_{Cell}+N_{Nutrient}=K$
+   </p>
+   
+   <h3>Traditional form for logistic equation comes from the ODE for $[Cell]$</h3>
+   <p>If we rewrite the ODE for $[Cell]$ in terms of $N_{Cell}$ and rearrange, we recover the familiar form of the logistic equation, whose solution we saw <a href="http://cnr.lwlss.net/DiscreteStochasticLogistic">previously</a>.</p>
+   <p>
+   $\frac{d[Cell]}{dt} = r[Cell][Nutrient]\\
+    \Rightarrow \frac{1}{K}\frac{N_{Cell}}{dt}=r\frac{N_{Cell}}{K}\frac{(K-N_{Cell})}{K}\\
+    \Rightarrow \frac{dN_{Cell}}{dt} = r N_{Cell}(1-\frac{N_{Cell}}{K})$
+   </p>
+</article>
+
+<hr>
+
+	<article>
 	<h1>A discrete, stochastic, logistic population model</h1>
 	<time datetime="2012-12-29T18:32:05Z">18:32 Saturday 29th December 2012</time>
 	

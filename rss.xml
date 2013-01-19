@@ -7,6 +7,19 @@
  <language>en</language>
  
  <item>
+ <title>Mass action and the logistic population model</title>
+ <link>http://cnr.lwlss.net/DSLMassAction</link>
+ <description>
+ 	&lt;h1&gt;Mass action and the logistic population model&lt;/h1&gt;
+	&lt;time datetime=&quot;2013-01-15T22:26:25Z&quot;&gt;22:26 Tuesday 15th January 2013&lt;/time&gt;
+	
+	&lt;p&gt;In a &lt;a href=&quot;http://cnr.lwlss.net/DiscreteStochasticLogistic/&quot;&gt;previous article&lt;/a&gt; I described the discrete stochastic logistic model of population growth.  I am particularly interested in modelling populations of cells dividing until they run out of space or nutrients.  I showed how to construct the logistic model as an adaptation of an exponential growth model with an extra density-dependent term.  I assumed that the hazard function for the discrete stochastic version of the logistic model is the same as in the deterministic case.&lt;/p&gt;
+	
+	&lt;p&gt;In this article I will show that the logistic model can be derived by thinking about a a single, batch, second-order, biochemical reaction between cells and nutrients to produce more cells.  This allows us to easily write the logistic model in a standard, computer-readable, modelling format: &lt;a href=&quot;http://sbml.org/&quot;&gt;SBML&lt;/a&gt;, which in turn allows us to use tools for simulating biochemical reaction networks to carry out deterministic or stochastic simulations of the growth of such populations.  Writing the logistic model in terms of second order mass action kinetics also allows us to be very clear about the assumptions underlying the stochastic version of the model, as the probabilistic &lt;a href=&quot;http://en.wikipedia.org/wiki/Statistical_mechanics&quot;&gt;theory&lt;/a&gt; behind chemical reactions obeying mass action kinetics is well established.&lt;/p&gt;
+ </description>
+ </item>
+ 
+ <item>
  <title>A discrete, stochastic, logistic population model</title>
  <link>http://cnr.lwlss.net/DiscreteStochasticLogistic</link>
  <description>
