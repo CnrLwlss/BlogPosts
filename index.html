@@ -51,7 +51,7 @@
 	
 	<h2>Simulating a biased random walk</h2>
 	
-	<p>If we wanted to bias the random walk in a particular direction, we could use a slightly different criterion for selecting whether to increase or decrease $x$ at each step.  We can define the probability of decreasing $x$ at each step to be $\theta$.  To simulate step $i$ we can generate a $U(0,1)$ random number as before, but this time if the random number is greater than $theta$, we set $x_{i+1}=x_i+1$, otherwise we can set $x_{i+1}=x_i-1$.</p>
+	<p>If we wanted to bias the random walk in a particular direction, we could use a slightly different criterion for selecting whether to increase or decrease $x$ at each step.  We can define the probability of decreasing $x$ at each step to be $\theta$.  To simulate step $i$ we can generate a $U(0,1)$ random number as before, but this time if the random number is greater than $\theta$, we set $x_{i+1}=x_i+1$, otherwise we can set $x_{i+1}=x_i-1$.</p>
 	
 	<img src="ConstrainedRandomWalk/BiasedRandomWalks.png" title="25 positively biased random walks (black) and 25 negatively biased random walks (red) all starting from x=0">
 	<p style="font-size: 75%;"><b>Figure 2 - Biased Random walks</b>  25 positively biased random walks (black, $\theta=0.4$) and 25 negatively biased random walks (red, $\theta=0.6$) all starting from $x_0=0$.  $n=500$.</p>
