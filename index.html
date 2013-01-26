@@ -69,7 +69,7 @@
 	$x_{targ}-x_0 = n(1-\theta)-n\theta\\
 	\Rightarrow \theta = \frac{1-\frac{x_{targ}-x_0}{n}}{2}$
 	
-	<p>However, as we can see from the wedge shape of the (e.g. black) simulations in Figure 2 above, choosing a single value of $\theta$ will not guarantee that we actually hit our target.  Fixing $\theta$ at an appropriate value only makes hitting the target more likely.  To constrain the simulation so that it converges to $x_{targ}$ exactly, we need to recalculate $\theta$ after every step.  We can do this by resetting $x_0$ in the expression above to the current value of $x$, and decreasing $n$ to represent the number of steps remaining, for each step in the simulation:</p>
+	<p>However, as we can see from the wedge shape of the (e.g. black) simulations in Figure 2 above, choosing a single value of $\theta$ will not guarantee that we actually hit our target.  Fixing $\theta$ at an appropriate value only makes hitting the target more likely.  To constrain the simulation so that it converges to $x_{targ}$ exactly, we need to recalculate $\theta$ after every step.  We can do this by resetting $x_0$ in the expression above to the current value of $x$, and decreasing $n$ to represent the number of steps remaining, for each step $i$ in the simulation:</p>
 	
 	$\theta_i=\frac{1-\frac{x_{targ}-x_i}{n-i}}{2}$
 	
