@@ -7,6 +7,20 @@
  <language>en</language>
  
  <item>
+ <title>Constrained Random Walks</title>
+ <link>http://cnr.lwlss.net/ConstrainedRandomWalk</link>
+ <description>
+ 	&lt;h1&gt;Constrained Random Walks&lt;/h1&gt;
+	&lt;time datetime=&quot;2013-01-26T13:24:00Z&quot;&gt;13:24 Saturday 26th January 2013&lt;/time&gt;
+
+	&lt;p&gt;
+	&lt;iframe src=&quot;http://player.vimeo.com/video/57360669?title=0&amp;amp;byline=0&amp;amp;portrait=0&amp;amp;loop=1&quot; width=&quot;600&quot; height=&quot;512&quot; frameborder=&quot;0&quot; webkitAllowFullScreen mozallowfullscreen allowFullScreen&gt;&lt;/iframe&gt;
+	&lt;/p&gt;
+	
+	&lt;p&gt;The video above is made from two, constrained, one-dimensional &lt;a href=&quot;http://en.wikipedia.org/wiki/Random_walk&quot;&gt;random walks&lt;/a&gt; through the frames of a video clip.  The constraint here is that both output videos begin and end with the same frame from the original clip.  Both videos have same number of output frames, but take different, random paths through the original set of frames.  In this article, I&#039;ll outline how to generate such constrained random walks.  Note that, for carrying out a walk in video frame space, it is important to use a discrete random walk and not a Gaussian random walk (or &lt;a href=&quot;http://en.wikipedia.org/wiki/Wiener_process&quot;&gt;Weiner process&lt;/a&gt;).  This constrained, discrete random walk process is probably closely related to a &lt;a href=&quot;http://en.wikipedia.org/wiki/Brownian_bridge&quot;&gt;Brownian bridge&lt;/a&gt;. &lt;/p&gt;
+ </description>
+ 
+ <item>
  <title>Mass action and the logistic population model</title>
  <link>http://cnr.lwlss.net/DSLMassAction</link>
  <description>
