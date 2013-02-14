@@ -81,7 +81,7 @@
 	
 	<p>Below is some R code which demonstrates simulating unconstrained, unbiased random walks, biased random walks and constrained random walks (corresponding to Figures 1,2 and 3).  It is worth noting that in order for it to be possible to hit $x_{targ}$, after taking $n$ steps from $x_0$, $x_{targ}-x_0$ and $n$ must both be odd or both be even.  However, the algorithm detailed below will still converge to one of the two next-nearest final values if this is not the case.</p>
 	
-	<script src="https://gist.github.com/4643064.js"></script>
+	<script src="https://gist.github.com/CnrLwlss/4643064.js"></script>
 	
 </article>
 
@@ -211,8 +211,8 @@
 	
 	<p>There is one feature unique to the logistic model that allows us to carry out relatively efficient simulation: we can calculate the total number of events (e.g. cell divisions) which will occur <i>a priori</i> ($K-N_0$).  This allows us to generate all the random numbers required for stochastic simulation at once, which in turn allows vectorised calls to random number generators.  Generating random numbers with vectorised calls is useful for carrying out simulations in high-level programming languages such as <a href="http://www.r-project.org/">R</a> or <a href="http://www.python.org/">Python</a> where vectorised operations are many times faster than equivalent for loops.  The R function below is quite fast, simulating a cell population with a carrying capacity of 1.6 million cells (corresponding to a realistic pinned yeast culture growing on CSM solid agar for example) in about half a second.  The current version of the Python function is about the same speed.</p>
 	
-<div><script src="https://gist.github.com/4430666.js"></script></div>
-<div><script src="https://gist.github.com/4431230.js"></script></div>
+<div><script src="https://gist.github.com/CnrLwlss/4430666.js"></script></div>
+<div><script src="https://gist.github.com/CnrLwlss/4431230.js"></script></div>
 
 <p>The code snippets above work by generating $K-N_0$ $U(0,1)$ random numbers and the list of cell numbers ($N$) present after each division event, using $N$, $r$ and $K$ to calculate the hazard of division for each value of $N$ and finally, using the <a href="http://en.wikipedia.org/wiki/Inverse_transform_sampling">inversion method</a> to generate a sample from the exponential distribution with rate parameter equal to the hazard.</p>
 

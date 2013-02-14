@@ -79,9 +79,9 @@
 	<p style="font-size: 75%;"><b>Logistic model simulations</b>  100 discrete stochastic simulations from the logisitic model of growth from an inoculum of one cell ($N_0 = 1$) to a carrying capacity of 100 cells ($K = 100$) for a slow growing strain (pink, $r = 3$) and a fast-growing strain (grey, $r = 10$).  Deterministic simulations using the same parameter values are overlaid in red and black respectively.</b>
 	
 	<p>There is one feature unique to the logistic model that allows us to carry out relatively efficient simulation: we can calculate the total number of events (e.g. cell divisions) which will occur <i>a priori</i> ($K-N_0$).  This allows us to generate all the random numbers required for stochastic simulation at once, which in turn allows vectorised calls to random number generators.  Generating random numbers with vectorised calls is useful for carrying out simulations in high-level programming languages such as <a href="http://www.r-project.org/">R</a> or <a href="http://www.python.org/">Python</a> where vectorised operations are many times faster than equivalent for loops.  The R function below is quite fast, simulating a cell population with a carrying capacity of 1.6 million cells (corresponding to a realistic pinned yeast culture growing on CSM solid agar for example) in about half a second.  The current version of the Python function is about the same speed.</p>
-	
-<div><script src="https://gist.github.com/4430666.js"></script></div>
-<div><script src="https://gist.github.com/4431230.js"></script></div>
+
+<div><script src="https://gist.github.com/CnrLwlss/4430666.js"></script></div>
+<div><script src="https://gist.github.com/CnrLwlss/4431230.js"></script></div>
 
 <p>The code snippets above work by generating $K-N_0$ $U(0,1)$ random numbers and the list of cell numbers ($N$) present after each division event, using $N$, $r$ and $K$ to calculate the hazard of division for each value of $N$ and finally, using the <a href="http://en.wikipedia.org/wiki/Inverse_transform_sampling">inversion method</a> to generate a sample from the exponential distribution with rate parameter equal to the hazard.</p>
 
