@@ -68,7 +68,7 @@ pagedata["Time"]=times
 pagedata["Datetime"]=datetimes
 
 # Sort as you like...
-pagedata=pagedata.sort(columns=["Title","Datetime"],inplace=True)
+pagedata=pagedata.sort(columns=["Datetime","Title"],inplace=True,ascending=False)
 pagedata.index=range(0,len(pagedata["URL"]))
 
 headerString='''
@@ -84,6 +84,8 @@ headerString='''
 </link></link></meta></head>
 <body><header><h1>Archive</h1></header>
 <article>
+
+<p>Articles sorted by title <a href="byname.html">here</a>.</p>
 
 <ul>
 '''
@@ -118,7 +120,7 @@ archiveFile.write(headerString+listString+tailString)
 archiveFile.close()
 
 # Different sorting
-pagedata=pagedata.sort(columns=["Datetime","Title"],inplace=True,ascending=False)
+pagedata=pagedata.sort(columns=["Title","Datetime"],inplace=True)
 pagedata.index=range(0,len(pagedata["URL"]))
 
 listString=''''''
@@ -127,6 +129,6 @@ for i in xrange(0,len(pagedata.URL)):
     line='<li><a href="'+pagedata.URL[i]+'">'+pagedata.Title[i]+' </a>'+pagedata.Time[i]+'\n'
     listString+=line
 
-archiveFile=open("Archive/date.html","w")
+archiveFile=open("Archive/byname.html","w")
 archiveFile.write(headerString+listString+tailString)
 archiveFile.close()
