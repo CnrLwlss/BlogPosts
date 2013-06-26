@@ -1,0 +1,52 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+	<head>
+    <title>Handling raw sequencing data</title>
+    <meta charset='utf-8'>
+	<meta content="" name="description"/>
+	<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+	</link></link></meta>
+	<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+	</head>
+
+	<body>
+	<header>
+	<h1>Handling raw sequencing data</h1>
+	<time datetime="2013-06-26T16:44:00Z">16:44 Wednesday 26th January 2013</time>
+	</header>
+	<article>
+	
+	<h2>Introduction</h2>
+	<p>Over the last couple of months I've been asked for help analyzing several different sets of sequencing data.  This is not really my area, but I can see why I'm being approached: it's obvious that I use computers and big computers and programming are required to extract information from these data.  So, as a note to my future self and as a pointer for others I decided to write three posts describing some of the computing workflows I've been using.  Please add any criticism to this post on Google+.  I'd love to learn how to do better and update these posts.</p>
+	
+	<h2>Raw sequencing data</h2>
+	
+	<a href="http://www.illumina.com/" title="An illumina sequencer.  Although some of our sequencing is done using illumna machines, I've no idea if it's this particular model"><img="http://res.illumina.com/images/technology/genome_analyzer_lg.jpg"></a>
+	
+	<p>One project I'm involved with is a comparison of the genotypes of several <i><a href="http://en.wikipedia.org/wiki/Saccharomyces_cerevisiae">S. cerevisiae</a></i> populations.  Cell samples were prepared in the lab and sent off to an external sequencing service provider, who carried out paired-end sequencing.   About a month later, they sent an email informing us that the data were ready and pointed us to a password protected webserver from which we could download them.  Data in this case consisted of 24 .fastq.gz files (2 per sample) approximately 1.2Gb each.</p>
+	
+	<h2>Hardware requirements</h2>
+	<p>At this point it's probably worth thinking about the type of computing facilities required to handle and analyse these data comfortably.</p>
+	
+	<h3>Bandwidth</h3>
+	<p>The first hurdle to overcome when handling these data is downloading them.  My computers are part of the Newcastle University network.  Newcastle University is part of the <a href="http://en.wikipedia.org/wiki/JANET">JANET</a> network and so has very fast internet indeed.  <a href="http://www.speedtest.net/">This</a> tool quotes my internet download speed as 95Mbps.</p>.  It took me 1 hour to download all 28.3Gb of data.</p> 
+    
+	<h3>Disk space</h3>
+	<p> The downloaded files are compressed (thus the .gz file extension).  If you want to store the uncompressed versions (note,  there are ways around that), they come to about 88Gb.  Also, many of the output files from the analysis are of similar size.  Overall, I would recommend having about 350Gb of free disk-space to work with a dataset of this kind of size.</p> 
+
+	<h3>CPU</h3>
+	
+	
+	<h4>RAM</h3>
+	
+	</article>
+</body>	
+</html>
