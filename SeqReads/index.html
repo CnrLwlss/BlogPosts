@@ -25,22 +25,25 @@
 	<article>
 	
 	<h2>Introduction</h2>
-	<p>Over the last couple of months I've been asked for help analyzing several different sets of sequencing data.  This is not really my area, but I can see why I'm being approached: it's obvious that I use computers and big computers and programming are required to extract information from these data.  So, as a note to my future self and as a pointer for others I decided to write three posts describing some of the computing workflows I've been using.  Please add any criticism to this post on Google+.  I'd love to learn how to do better and update these posts.</p>
+	<p>Over the last couple of months I've been asked for help analyzing several different sets of <a href="http://en.wikipedia.org/wiki/DNA_sequencing#Next-generation_methods">high-throughput sequencing</a> data.  This is not really my area, but I can see why I'm being approached: it's obvious that I use computers and big computers and programming are required to extract information from these data.  So, as a note to my future self and as a pointer for others I decided to write three posts describing some of the computing workflows I've been using.  Please add any criticism to this post on Google+.  I'd love to learn how to do better and update these posts.</p>
 	
 	<h2>Raw sequencing data</h2>
 	
-	<a href="http://www.illumina.com/" title="An illumina sequencer.  Although some of our sequencing is done using illumna machines, I've no idea if it's this particular model"><img="http://res.illumina.com/images/technology/genome_analyzer_lg.jpg"></a>
+	<a href="http://www.illumina.com/" title="An illumina sequencer.  Although some of our sequencing is done using illumna machines, I've no idea if it's this particular model"><img src="http://res.illumina.com/images/technology/genome_analyzer_lg.jpg" width=500></a>
 	
 	<p>One project I'm involved with is a comparison of the genotypes of several <i><a href="http://en.wikipedia.org/wiki/Saccharomyces_cerevisiae">S. cerevisiae</a></i> populations.  Cell samples were prepared in the lab and sent off to an external sequencing service provider, who carried out paired-end sequencing on an Illumina machine.   About a month later, they sent an email informing us that the data were ready and pointed us to a password protected webserver where we could download them.  Data in this case consisted of 24 .fastq.gz files (2 per sample) approximately 1.2Gb each.</p>
 	
 	<h2>Hardware requirements</h2>
+	
+	<img src="Workstation.jpg" title="For what it's worth, here is a picture of the computer used for this analysis.">
+	
 	<p>At this point it's probably worth thinking about the type of computing facilities required to handle and analyse these data comfortably.</p>
 	
 	<h3>Data transfer rate/bandwidth</h3>
 	<p>The first hurdle to overcome is downloading the data.  My computers are part of the Newcastle University network.  Newcastle University is part of the <a href="http://en.wikipedia.org/wiki/JANET">JANET</a> network and so has very fast internet indeed.  <a href="http://www.speedtest.net/">This</a> tool quotes my internet download speed as 95Mbps.  For comparison, a fast connection from a public ISP will give an actual download speed of about 50Mbps.  It took me 1 hour to download all 28.3Gb of data.</p> 
     
 	<h3>Disk space</h3>
-	<p> The files supplied are compressed (thus the .gz file extension).  If you want to store the uncompressed versions (note,  there are ways around that), they come to about 88Gb.  Also, many of the output files from the analysis are of similar size.  Overall, I would say that having about 350Gb of free disk-space to work with a dataset of this kind of size would be completely luxurious.  Many of the files generated could be deleted before archiving.</p> 
+	<p> The files supplied are compressed (thus the .gz file extension).  If you want to store the uncompressed versions (note,  there are ways around that), they come to about 88Gb.  Also, many of the output files from the analysis are of similar size.  Overall, I would say that having about 350Gb of free disk-space to work with a dataset of this kind of size would be more than adequate: you would never have to think twice about whether to uncompress a file or whether it is worth keeping.  Many of the files generated could be deleted before archiving.</p> 
 
 	<h3>CPU</h3>
 	<p>Probably the most CPU intensive task in this workflow is read alignment (see below).  The software I use for alignment is capable of taking advantage of multiple CPUs at once to speed things up.  Using 12 physical 3.05Mhz CPUs I can align the reads from a pair of files in 10 minutes, aligning reads for all samples in 2 hours.  Since this is not an every day task, this number of CPUs is overkill.  I would expect 4 to be more than adequate.</p>	
@@ -48,12 +51,29 @@
 	<h4>RAM</h3>
 	<p>The tools I use for analysis are not that memory hungry.  I haven't paid close attention, but I don't think I used more than 5Gb of RAM at any one time.  I will double check this.</p>
 	
-	<h2>Workflow</h2>
+	<h2>Working directory</h2>
 	
-	<p>First thing I did was create a directory for the project with the following sub-directories</p>
+	<p>Analysing high-throughput sequencing data involves generating several types of intermediate files.  It's probably best to try to be organised and create a working directory with several sub-directories to store them all.  Below is the directory structure I use.  I put raw data in the 'data' directory and scripts for analysis in the high-level working directory.</p>
 	
-	<p>Downloaded and installed software: bowtie2, samtools, (set path), shortRead (R), BioPython (python).</p>
+<p><a href="." title="This is a working directory you create on your hard drive">.</a>
+<br>				   ├── <a href="./alignments/" title="Write alignment files (.sam and .bam files) here as they are generated">alignments</a>
+<br>				   ├── <a href="./data/" title="Put raw data in here">data</a>
+<br>				   ├── <a href="./indices/" title="Index files speed up data access, write them here as they are generated">indices</a>
+<br>				   ├── <a href="./pileups/" title="Pileups are re-arranged alignment files needed for calling bases when generating sequences, write them here are they are generated.">pileups</a>
+<br>				   └── <a href="./reference_SGD/" title="To do resequencing, we need a reference sequence to align to">reference_SGD</a>
+<br>				   &nbsp;&nbsp;&nbsp; ├── <a href="./reference_SGD/chromosomes/" title="Yeast sequence downloaded from SGS comes in two formats">chromosomes</a>
+<br>				   &nbsp;&nbsp;&nbsp; └── <a href="./reference_SGD/S288C_reference_genome_R64-1-1_20110203/" title="Yeast sequence downloaded from SGS comes in two formats">S288C_reference_genome_R64-1-1_20110203</a>
+		<br><br>
+		</p>
 	
+	<h2>Software</h2>
+	<p>To align the reads to a reference sequence I use are <a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a> and <a href="http://samtools.sourceforge.net/">samtools</a></p>
+	
+	Installing on Windows/Linux
+	
+	
+	
+	<h2>Scripting to automate workflows</h2>
 	<p>Windows vs. Linux, automating workflow.</p>
 	
 	
