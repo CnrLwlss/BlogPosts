@@ -24,9 +24,48 @@
 	</header>
 	<article>
 	
-	<h2>Software</h2>
+	<h2>Introduction</h2>
+	<p>In my last post I described the start of a typical high-throughput sequencing data analysis workflow: how to align paired-end reads, recorded in .fastq files, against a reference sequence.  The outputs from that workflow are .bam files describing the alignment of reads against the reference.  Such files are useful in several different contexts; I have had a number of requests for help with extracting read coverage (number of reads per nucleotide for some or all of the genome) from .bam files and so this seems like a natural place to start a new post.</p>
 	
-<p>the <a href="http://www.bioconductor.org/packages/release/bioc/html/ShortRead.html">shortRead</a> package for <a href="http://www.r-project.org/">R</a> and the <a href="http://biopython.org/wiki/Main_Page">biopython</a> package for <a href="http://www.python.org/">Python</a>.  Python is a very useful, clean and easy general programming language.  R is a powerful statistical programming language with many interesting add-ons available.  The library and package extensions suggested above are directly relevant for high-throughput sequencing, but these languages are extremely useful for a wide range of tasks.  I run a short, introductory course at Newcastle: <a href="http://www.staff.ncl.ac.uk/conor.lawless/ScientificPython/">scientific computing with python</a> and there are several excellent <a href="http://www.ncl.ac.uk/maths/rcourse/">R courses</a> run here also.</p>
+	<p>Some reasons for being interested in coverage:</p>
+	<ol>
+		<li>Pilot sequencing runs: Have I gathered sufficient reads to observe SNPs, deletions or insertions along the sampled genome?  Sequencing experiments are often designed with a minimum required number of reads per base.  Trial sequencing runs can help determine the amount of sequencing time (and cost) required to achieve the minimum number of reads.</li>
+		<li>Genome-wide quality control: Are there any specific areas of the genome where my sequencing is running into trouble?  Regions of the genome with highly repetitive DNA, aneuploidy or gross <a href="http://en.wikipedia.org/wiki/Chromosomal_rearrangement">chromosomal rearrangements</a> can be detected by scanning coverage along chromosomes.</li>
+		<li><a href="http://en.wikipedia.org/wiki/ChIP-sequencing">ChIP-seq</a> to identify protein-DNA interactions: the number of reads per base (coverage) is proportional to the affinity of the target protein for sequences along the genome.</li>
+	</ol>
+	
+	<h2>Software Installation</h2>
+	
+	<p>The <a href="http://www.bioconductor.org/packages/release/bioc/html/ShortRead.html">ShortRead</a> package for <a href="http://www.r-project.org/">R</a> is well suited to analysing coverage in .bam files.  R is a powerful, open-source, statistical programming language with many interesting add-ons available.  R is extremely useful for a wide range of tasks, particularly reading in data from files and generating plots.  It is well worth spending time getting to grips with R and there are several excellent <a href="http://www.ncl.ac.uk/maths/rcourse/">courses</a> run here in Newcastle each year.  There are also online tutorials like <a href="http://www.cyclismo.org/tutorial/R/">this one</a> to get you started.</p>
+	
+	<h3>R</h3>
+	<p>If you don't already have R installed on your machine, you can download the relevant installation files for Windows or OSX <a href=http://cran.rstudio.com/">here</a>.  Note that you will need to have administrator rights on your machine.  For Newcastle University users: R has recently been rolled out onto many of the university desktop machines.  If it's not installed on your machine, raising a request with your local IT support officer should get it sorted out.  For Ubuntu (Linux) users, you can install R on the command-line as follows:</p>
+	
+	<code>
+sudo apt-get update
+sudo apt-get install r-base
+   </code>
+   
+   <p>Once R is installed, you can start it by typing "R" (followed by ENTER) at the command-line to get a text-only interface or navigate to an R shortcut for the GUI which has a windowed interface (e.g. on Windows: Start->All Programs->R->Rx64 3.0.1).  Regardless of which interface you use, commands are issued in the command window, predominantly by typing and all commands are fully scriptable (can be written in a text file, saved, copied, edited, distributed etc.).</p>
+   
+   <h3>ShortRead</h3>
+   
+   <p>Once R is installed, you need to install an add-on for R which can handle high-throughput sequencing data.  The <a href="http://www.bioconductor.org/packages/release/bioc/html/ShortRead.html">ShortRead</a> package on <a href="http://www.bioconductor.org/">bioconductor</a> is designed for this task.  To install it execute the following two lines (each followed by ENTER) in an R console:</p>
+ 
+<code>
+source("http://bioconductor.org/biocLite.R")
+biocLite("ShortRead") 
+</code>
+
+
+   
+   
+ 
+ 
+ 
+ 
+ I run a short, introductory course at Newcastle: <a href="http://www.staff.ncl.ac.uk/conor.lawless/ScientificPython/">scientific computing with python</a> and
+ and the <a href="http://biopython.org/wiki/Main_Page">biopython</a> package for <a href="http://www.python.org/">Python</a>.  Python is a very useful, clean and easy general programming language. 
 
 	
 	</article>

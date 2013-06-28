@@ -7,7 +7,7 @@
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 </link></link></meta></head>
 	<head>
-    <title>Handling raw sequencing data</title>
+    <title>Aligning raw sequencing data</title>
     <meta charset='utf-8'>
 	<meta content="" name="description"/>
 	<link href="../CLstyle.css" rel="stylesheet" type="text/css">
@@ -19,21 +19,40 @@
 
 	<body>
 	<header>
-	<h1>Handling raw sequencing data</h1>
+	<h1>Aligning raw sequencing data</h1>
 	<time datetime="2013-06-26T16:44:00Z">16:44 Wednesday 26th January 2013</time>
 	</header>
 	<article>
 	
 	<h2>Introduction</h2>
-	<p>Over the last couple of months I've been asked for help analyzing several different sets of <a href="http://en.wikipedia.org/wiki/DNA_sequencing#Next-generation_methods">high-throughput sequencing</a> data.  This is not really my area, but I can see why I'm being approached: it's obvious that I use computers and big computers and programming are required to extract information from these data.  So, as a note to my future self and as a pointer for others I decided to write three posts describing some of the computing workflows I've been using.  Please add any criticism to this post on Google+.  I'd love to learn how to do better and update these posts.</p>
+	<p>Over the last couple of months I've been asked for help analyzing several different sets of <a href="http://en.wikipedia.org/wiki/DNA_sequencing#Next-generation_methods">high-throughput sequencing</a> data.  This is not really my area, but I can see why I'm being approached: it's obvious that I use computers and big computers are required to extract information from these data.  So, as a note to my future self and as a pointer for others I decided to write three posts describing some of the computing workflows I've been using.  I've been pleasantly surprised at how straightforward it is.  Please add any criticism to this post on Google+.  I'd love to learn how to do better and update these posts.</p>
 	
 	<h2>Raw sequencing data</h2>
 	
 	<a href="http://www.illumina.com/" title="An illumina sequencer.  Although some of our sequencing is done using illumna machines, I've no idea if it's this particular model"><img src="http://res.illumina.com/images/technology/genome_analyzer_lg.jpg" width=500></a>
 	
-	<p>One project I'm involved with is a comparison of the genotypes of several <i><a href="http://en.wikipedia.org/wiki/Saccharomyces_cerevisiae">S. cerevisiae</a></i> populations.  Cell samples were prepared in the lab and sent off to an external sequencing service provider, who carried out paired-end sequencing on an Illumina machine.   About a month later, they sent an email informing us that the data were ready and pointed us to a password protected webserver where we could download them.  Data in this case consisted of 24 .fastq.gz files (2 per sample) approximately 1.2Gb each.</p>
+	<p>One project I'm involved with is comparing the <a href="http://www.ncbi.nlm.nih.gov/projects/genome/probe/doc/TechResequencing.shtml">resequenced</a> genotypes of several <i><a href="http://en.wikipedia.org/wiki/Saccharomyces_cerevisiae">S. cerevisiae</a></i> populations.  Cell samples were prepared in the lab and sent off to an external sequencing service provider, who carried out paired-end sequencing on an Illumina machine.   About a month later, they sent an email informing us that the data were ready and pointed us to a password protected webserver where we could download them.  Data in this case consisted of 24 .fastq.gz files (2 per sample) approximately 1.2Gb each.  You can see some examples of the contents of .fastq files, and some tips for how to read them in <a href="http://www.staff.ncl.ac.uk/d.j.wilkinson/">Darren Wilkinson</a>'s <a href="http://darrenjw.wordpress.com/2010/11/28/introduction-to-the-processing-of-short-read-next-generation-sequencing-data/">post</a> on processing sequencing data.  Below is a snippet of uncompressed raw data from a <a href="http://en.wikipedia.org/wiki/FASTQ_format">.fastq</a> file:</p>
 	
-	<h2>Hardware requirements</h2>
+	<pre>
+@HISEQ:178:C23RCACXX:5:1101:1913:2210 1:N:0:CGATGT
+CGTGGATCTTAGCAGAATGGGCTATAATTGGGAAGGTAACGAATTTTCATATCACATGCTGCTTGTATCTCAATACATGTTGAATGCAGGATTACTCCAAA
++
+1=1=ABDDFB<C<CBECBDAF3FEE?E@4A+:CBED?DGICFGDC<@?999?/?*9CBBAEE3@CFF@;CE7@EE?E:?CABB3?@EAA@((5@@######
+@HISEQ:178:C23RCACXX:5:1101:2634:2072 1:N:0:CGATGT
+ACTCCCATCGCTCTACATTATCCGATCCAAAGCAGATGTTGAGAAAAGCATCCACTGGTAGCTCAAACGATCCAAGCGCTATGACTCCTTTTTCTTCAGTA
++
+<@@DDDDDFFDAFGIII@HBHFCGCFHEB9?@GHG<FFHBFCHGGHIIFCGI)B=C@GIGG:DHGIGE/=B;;36;??;@;?ACCCCC:>CCC>CC>CCE:
+@HISEQ:178:C23RCACXX:5:1101:2675:2124 1:N:0:CGATGT
+AATTTCACGTACTTTTTCACTCTCTTTTCAAAGTTCTTTTCATCTTTCCATCACTGTACTTGTTCGCTATCGGTCTCTCGCCAATATTTAGCTTTAGATGG
++
+@@@FFDFFHDFFFIIIJ;CEIFGHHGIJHIJJJGHEGHIJEHIHIIIGEG>F>GGHHJHGIHIIIIIGHIJIBEAAEEEFDDDDCDDEDCDDDCDCCDD@C
+@HISEQ:178:C23RCACXX:5:1101:2824:2166 1:N:0:CGATGT
+TCATTAATGTACATGTAATAGAGATAGAACCACGTGTGTAGAATAGATTCAAGCACAACAATTCTGGAAATCCATTTGTGGAGAGGTAACAATGCTAAGTA
++
+?@@=DDDDF????GHBGGDH@HG@C@EDH?CEDAFG?EF4?BFAEEBE@4?BGBDGCH@@FHGBCFHGIEHFG@DGEHHFE:?DEE766@ECCCCA@CC5;
+	</pre>
+	
+	<h2>Computing requirements</h2>
 	
 	<img src="Workstation.jpg" title="For what it's worth, here is a picture of the computer used for this analysis.">
 	
@@ -42,18 +61,18 @@
 	<h3>Data transfer rate/bandwidth</h3>
 	<p>The first hurdle to overcome is downloading the data.  My computers are part of the Newcastle University network.  Newcastle University is part of the <a href="http://en.wikipedia.org/wiki/JANET">JANET</a> network and so has very fast internet indeed.  <a href="http://www.speedtest.net/">This</a> tool quotes my internet download speed as 95Mbps.  For comparison, a fast connection from a public ISP will give an actual download speed of about 50Mbps.  It took me 1 hour to download all 28.3Gb of data.</p> 
     
-	<h3>Disk space</h3>
+	<h3>Hard Disk space</h3>
 	<p> The files supplied are compressed (thus the .gz file extension).  If you want to store the uncompressed versions (note,  there are ways around that), they come to about 88Gb.  Also, many of the output files from the analysis are of similar size.  Overall, I would say that having about 350Gb of free disk-space to work with a dataset of this kind of size would be more than adequate: you would never have to think twice about whether to uncompress a file or whether it is worth keeping.  Many of the files generated could be deleted before archiving.</p> 
 
-	<h3>CPU</h3>
+	<h3>Processers (CPUs)</h3>
 	<p>Probably the most CPU intensive task in this workflow is read alignment (see below).  The software I use for alignment is capable of taking advantage of multiple CPUs at once to speed things up.  Using 12 physical 3.05Mhz CPUs I can align the reads from a pair of files in 10 minutes, aligning reads for all samples in 2 hours.  Since this is not an every day task, this number of CPUs is overkill.  I would expect 4 to be more than adequate.</p>	
 	
-	<h4>RAM</h3>
-	<p>The tools I use for analysis are not that memory hungry.  I haven't paid close attention, but I don't think I used more than 5Gb of RAM at any one time.  I will double check this.</p>
+	<h3>Memory (RAM)</h3>
+	<p>The tools I use for analysis are not that memory hungry.  I haven't paid close attention, but I don't think I used more than 3Gb of RAM at any one time.</p>
 	
 	<h2>Working directory</h2>
 	
-	<p>Analysing high-throughput sequencing data involves generating several types of intermediate files.  It's probably best to try to be organised and create a working directory with several sub-directories to store them all.  Below is the directory structure I use.  I put raw data in the 'data' directory and scripts for analysis in the high-level working directory.</p>
+	<p>Analysing high-throughput sequencing data involves generating several types of intermediate files.  It's probably best to try to be organised and create a working directory with several sub-directories to store them all.  Below is the directory structure I use.  I put raw data in the 'data' directory and scripts for analysis in the high-level working directory.  I downloaded a <a href="http://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/">reference sequence</a>, against which to align reads, from the <a href="http://www.yeastgenome.org/">Sacchromyces Genome Database</a> website, uncompressed it and placed the files in the 'references_SGD' directory.  The remaining directories are automatically populated with output files by running workflow scripts (see below).</p>
 	
 <p><a href="." title="This is a working directory you create on your hard drive">.</a>
 <br>				   ├── <a href="./alignments/" title="Write alignment files (.sam and .bam files) here as they are generated">alignments</a>
@@ -66,21 +85,78 @@
 		<br><br>
 		</p>
 	
-	<h2>Software</h2>
-	<p>To align the reads to a reference sequence I use are <a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a> and <a href="http://samtools.sourceforge.net/">samtools</a></p>
+	<h2>Software installation</h2>
+	<h3>bowtie2</h3>
+	<p>To align the reads to a reference sequence I use <a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a>, a very impressive, fast, <a href="https://en.wikipedia.org/wiki/Open_source">open-source</a>, <a href="http://en.wikipedia.org/wiki/Command-line_interface">command-line</a> tool.  It's easy to install on <a href="http://en.wikipedia.org/wiki/Linux">Linux</a> and <a href="http://en.wikipedia.org/wiki/Microsoft_Windows">Windows</a>.</p>
 	
-	Installing on Windows/Linux
+	<p>To install <a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a> under Linux, first download the source code package (e.g. bowtie2-2.1.0-source.zip) from the files tab on the <a href="http://sourceforge.net/projects/bowtie-bio/?source=navbar">Bowtie sourceforge page</a>.  Then unzip to a target directory, navigate to the target directory and execute "make" to compile for your machine.  You will probably want to export the target directory to your path before use.</p>
 	
+	<p>If you'd prefer to install <a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a> under Windows, binary files (including 64-bit binaries) are also available from the <a href="http://sourceforge.net/projects/bowtie-bio/?source=navbar">Bowtie sourceforge page</a>.  Unzip the files to a target directory and add that directory (e.g. the directory containing the file "bowtie2-align.exe") to your path, as described <a href="http://www.computerhope.com/issues/ch000549.htm">here</a>.</p>
 	
+	<h3>samtools</h3>
+	<p>bowtie2 outputs alignments as uncompressed .sam files.  Many other tools for further analysis need alignments to be in the alternative, compressed, binary .bam format.  Fortunately there is another amazing, open-source, command-line tool which can do that (and many other useful things): <a href="http://samtools.sourceforge.net/">samtools</a>.</p>
+	
+	<p>The easiest way to install samtools under Linux is to check out the most recent source code from <a href="https://github.com/samtools/samtools">github</a>.  If you don't currently have git installed on your system, you will need to do that first.  In Ubuntu, for example, you can do this by executing the following command in a terminal:</p>
+	
+	<code>sudo apt-get install git</code>
+	
+	<p>Then, check out a copy of the source code by executing the following (you probably want to execute this in your home directory):</p>
+	
+	<code>git clone git://github.com/samtools/samtools.git</code>
+	
+	<p>The last command makes a directory called samtools.  Navigate into that directory and execute "make" to compile for your machine.  You will probably want to export the following three directories to your path before use: samtools samtools/bcftools samtools/misc</p>
 	
 	<h2>Scripting to automate workflows</h2>
-	<p>Windows vs. Linux, automating workflow.</p>
 	
+	<p>A useful feature of code-based computational work (scripting and programming) is that the code that you write (computer instructions written as plain text) is both the means by which work is carried out and a perfect record of past actions.  This is unlike manual recording of work (e.g. writing records into experimental lab notebooks) where an extra layer of human interpretation can occasionally lead to omissions or errors.  Code-based work is also unlike GUI-based computation, which is based on user interaction with mouse-clicks and windows and typically leaves no trace of how analysis was carried out.  GUI-based computation (e.g. producing plots using Microsoft Excel) can typically only be replicated by manual execution of the same series of tasks, much like manual work.  On the other hand, very complicated code-based workflows, once created, can be repeated trivially by executing a single command, or by clicking on a single icon, for example.  Similarly, code describing a complicated workflow can be changed easily by editing the underlying text file.  Since code is just plain text, it can easily be edited, saved, copied, distributed and archived.  Given the advantages of code-based work, the fact that bowtie2 and samtools are <a href="http://en.wikipedia.org/wiki/Command-line_interface">command-line</a> tools should be seen as a strong feature.  Even if you are not familiar with this way of working, it is worth spending a little time and effort coming to grips with <a href="http://en.wikipedia.org/wiki/Command-line_interface">command-line</a> tools, it will likely save you a great deal of time, even in the short-term.</p>
 	
+	<h3>Linux shell script for alignment</h3>
 	
+	<p>Using the <a href="https://en.wikipedia.org/wiki/Bash_(Unix_shell)">bash</a> shell <a href="https://en.wikipedia.org/wiki/Shell_script">scripting language</a> it is possible to write a short script to automate analysis of these files.  The script below uses bowtie2 to create an index of a reference genome and then aligns each of a set of samples to that reference genome.  It then uses samtools to convert the .sam alignment files to the more useful .bam format, generating sorted versions and indices for these files.</p>
 	
+	<p>Scripting and programming languages have a particular vocabulary and syntax.  Similarly to human languages, they are not intuitive or obvious to people who are unfamilar with them.  Fortunately, the vocabulary and syntax are much simpler than human languages and there are many excellent <a href="http://linuxgazette.net/133/cherian.html">resources</a> <a href="http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO.html">online</a> to help with the process of learning, translating or writing in these languages.  Lines preceded by a '#' in the code below are not used to carry out any actions, but are just human-readable descriptions of the purpose of the surrounding code.</p>
 	
+	<script src="https://gist.github.com/CnrLwlss/5884591.js"></script>
 	
+	<h3>Windows batch script for alignment</h3>
+	
+	<p>The same automated workflow can be achieved under Windows by writing a <a href="http://en.wikipedia.org/wiki/Batch_file">batch file</a>.  You can see a batch file which carries out the same tasks as the shell script above <a href="https://gist.github.com/CnrLwlss/5885029">here</a>.  Note that in this batch file, human-readable descriptions of the purpose of the code are preceded by a '::'.  Batch files are written in a different scripting language which is not as flexible as the Linux equivalent, but are still suitable for this analysis.  However, one disadvantage of using batch scripts is that the list of sample IDs to iterate over must be read from a separate file (you can download an example file <a href="roots.txt">here</a>).</p>
+	
+	<h2>Alignment file output</h2>
+	<p>After all that effort, the data that comes out at the end (the uncompressed <a href="http://samtools.sourceforge.net/SAM1.pdf">.sam</a> files at least) look like the example snippet below.  My next post will demonstrate how to get information from alignment files (particularly .bam files).</p>
+	
+<pre>
+@HD	VN:1.0	SO:unsorted
+@SQ	SN:ref|NC_001133|	LN:230218
+@SQ	SN:ref|NC_001134|	LN:813184
+@SQ	SN:ref|NC_001135|	LN:316620
+@SQ	SN:ref|NC_001136|	LN:1531933
+@SQ	SN:ref|NC_001137|	LN:576874
+@SQ	SN:ref|NC_001138|	LN:270161
+@SQ	SN:ref|NC_001139|	LN:1090940
+@SQ	SN:ref|NC_001140|	LN:562643
+@SQ	SN:ref|NC_001141|	LN:439888
+@SQ	SN:ref|NC_001142|	LN:745751
+@SQ	SN:ref|NC_001143|	LN:666816
+@SQ	SN:ref|NC_001144|	LN:1078177
+@SQ	SN:ref|NC_001145|	LN:924431
+@SQ	SN:ref|NC_001146|	LN:784333
+@SQ	SN:ref|NC_001147|	LN:1091291
+@SQ	SN:ref|NC_001148|	LN:948066
+@SQ	SN:ref|NC_001224|	LN:85779
+@PG	ID:bowtie2	PN:bowtie2	VN:2.1.0
+HISEQ:178:C23RCACXX:5:1101:2675:2124	99	ref|NC_001144|	463908	1	101M	=	463960	153	AATTTCACGTACTTTTTCACTCTCTTTTCAAAGTTCTTTTCATCTTTCCATCACTGTACTTGTTCGCTATCGGTCTCTCGCCAATATTTAGCTTTAGATGG	@@@FFDFFHDFFFIIIJ;CEIFGHHGIJHIJJJGHEGHIJEHIHIIIGEG>F>GGHHJHGIHIIIIIGHIJIBEAAEEEFDDDDCDDEDCDDDCDCCDD@C	AS:i:0	XS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:101	YS:i:-2	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:2675:2124	147	ref|NC_001144|	463960	1	101M	=	463908	-153	CCTGTACTTGTTCGCTATCGGTCTCTCGCCAATATTTAGCTTTAGATGGAATTTACCACCCACTTAGAGCTGCATTCCCAAACAACTCGACTCTTCGAAGG	#CC@C@CCDDBDDCDDDDDDDDDBBDDFFDDFHHHHEEBIIEIIJJJIGGFIFB7FD7IIHDG@GIIGGHDEIIHGIIJIGHHFFHEADEHGHFFFFFB@@	AS:i:-2	XS:i:-2	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:0A100	YS:i:0	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:3469:2199	83	ref|NC_001136|	889469	42	101M	=	889282	-288	TTGTCGAAATCTATATATGCGCCGCCCTGGCAGGATCAGCAAATACAAGTTACTTGGAAAGTCGCGGCATAGAAAGTAGACACTTCTTTTGTCAAAGATTG	EBDBDDCDDDCADDCE59DB@@B?DACCBBDCCDHGHHHCIHEGDGG@EGEHHIHEIGGG@GDEIIIIEIIGHHF@FFF:FCEEIGIIHHHHHFFFFFC@@	AS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:101	YS:i:0	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:3469:2199	163	ref|NC_001136|	889282	42	101M	=	889469	288	TAAGCCTGTTTCTAAACATGATCCCCAGGGTGAATATCTCCCATAGTGGCTGTGTTATTCTGTCTAAATGTGGCAGCTAAATAAGGTTTTTTCCAAGCTAT	B@@FFFFFFHHHHIIJEGGIGIJIIIGJGE1CBEIIIJJJJJFHIJBGGHIF?FBFCHIGIJACHIHGGIDHGIHHHD;?DDEECC.;ACBD?AD@58:AC	AS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:101	YS:i:0	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:3694:2092	99	ref|NC_001144|	467018	1	101M	=	467079	162	CTGCTGCCGGAAATGCTCTCTGTTCAAAAAGCTTTTACACTCTTGACCAGCGCACTCCGTCACCATACCATAGCACTCTTTGAGTTTCCTCTAATCAGGTT	BB@FDFFFHHFHHGHIHGHIIGIIFFHIJJJJIHIJFGHIHIHIGBFHEHGHHIJIHHHHEDFFCACCACCCDDDDCCDDDCCBDDDECCDDEACCACDDC	AS:i:0	XS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:101	YS:i:-2	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:3694:2092	147	ref|NC_001144|	467079	1	101M	=	467018	-162	CCCATACCATAGCACTCTTTGAGTTTCCTCTAATCAGGTTCCACCAAACAGATACCCCGGTGTTTCACGGAATGGTACGTTTGATATCGCTGATTTGAGAG	#CDCCCDDDDEDDCCCDDCCDCDDBBDCCCADC?DEDCA;FFDFHHHHHHHDB@JJJIJJJIHFDJIHGDHGIJJJJIJIHFHHGGHJHHFDFFDDDDBBB	AS:i:-2	XS:i:-2	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:0A100	YS:i:0	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:1913:2210	99	ref|NC_001146|	451329	42	101M	=	451531	303	CGTGGATCTTAGCAGAATGGGCTATAATTGGGAAGGTAACGAATTTTCATATCACATGCTGCTTGTATCTCAATACATGTTGAATGCAGGATTACTCCAAA	1=1=ABDDFBECECBECBDAF3FEE?E@4A+:CBED?DGICFGDCE@?999?/?*9CBBAEE3@CFF@;CE7@EE?E:?CABB3?@EAA@((5@@######	AS:i:-3	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:30T70	YS:i:-7	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:1913:2210	147	ref|NC_001146|	451531	42	101M	=	451329	-303	TCAAATAAAGTTATGGGGGCCATGTCGATATGTGCTGGCTCGTTTGTTGATTTTTATGGTCGTAATCAAGGCACAAAAATCTCGTCACATTATACATTTTC	#############@5895(9DDBDB@AAE:CA@=@B9=:;/2@GFEDC=;E9/3???6))F?1*BED9?4DCEE?IGGGFECEHEE:DE,,FD?B;=D?;8	AS:i:-7	XN:i:0	XM:i:3	XO:i:0	XG:i:0	NM:i:3	MD:Z:10G7T33G48	YS:i:-3	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:3259:2171	99	ref|NC_001141|	127803	42	101M	=	127987	285	AACCGCTATTTTTGGTTTTATCTTCGTTTCTTTCTCCTGAACGACATTCGTCACGAAAATTGCGGCGGAAAATTTCCTGATGCGGACACTTTTTCCCGATC	E?@+B@DDHFHFDHIFE;@EFFGGF?:??CGHGDHDGHIIIGHGFGHG8C8@CGEGHEEBDDECABBBEE;34ECE@CCCACEE9505((:@AC3ECB@E@	AS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:101	YS:i:0	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:3259:2171	147	ref|NC_001141|	127987	42	101M	=	127803	-285	TGCTTTCAGCATAGCACAGCATAGCAGCTGTGTATATCTTAAATAAGATGTAGACTGGTTTGCATTTGGAAAGGTTTTGTGTAAGAAAAGCAATACTTGAG	EDCCC@EECEFDFFC@CEHFEHHIGGFIIGHGJJHDJIGGHG@IGBEFIIHIGDCHEEIIIG@IIIIGEHGHGHGJIJIHGGHGGHGBFEFGHDDDBD8@?	AS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:101	YS:i:0	YT:Z:CP
+HISEQ:178:C23RCACXX:5:1101:3160:2249	83	ref|NC_001147|	90204	42	101M	=	89998	-307	CACTTAATAAAAGTGCGAGCATGAAAATCGTACCTGCTGCGGGTGCCAGATTTCTTGATAATAATTCATGAATAGTAAACAAATCTGCCCCATCTGCTTCT	CDCCDCDCDDDDDB?BCADDEDEDBDDCEBC@FFHHIHHFGIIJHJIGGJIGHIJIJJJJJIJJIIJJJIJJIJIJJIHJJIHEFJIIGGHHHFFFFD@@B	AS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:101	YS:i:0	YT:Z:CP
+</pre>
 	
 	</article>
 </body>	
