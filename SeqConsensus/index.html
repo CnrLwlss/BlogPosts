@@ -7,7 +7,7 @@
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 </link></link></meta></head>
 	<head>
-    <title>Handling raw sequencing data</title>
+    <title>Building consensus sequences</title>
     <meta charset='utf-8'>
 	<meta content="" name="description"/>
 	<link href="../CLstyle.css" rel="stylesheet" type="text/css">
@@ -19,12 +19,32 @@
 
 	<body>
 	<header>
-	<h1>Handling raw sequencing data</h1>
-	<time datetime="2013-06-26T16:44:00Z">16:44 Wednesday 26th January 2013</time>
+	<h1>Building consensus sequences</h1>
+	<time datetime="2013-06-30T14:27:00Z">14:27 Sunday 30th June 2013</time>
 	</header>
 	<article>
-
 	
+	<h2>Introduction</h2>
+	
+	<p>In my last two posts I described aligning short reads (stored in .fastq format) produced by a sequencing machine against a reference sequence and visualising read-depth coverage along the genome.  In the final post in this series of three, I will describe the next step in the resequencing workflow: generating a <a href="http://en.wikipedia.org/wiki/Consensus_sequence">consensus genomic sequence</a> from a read-alignment (.bam file).</p>
+	
+	<h3>Software & Scripting</h3>
+	
+	<p>In the first post in this series, I described installing the samtools software, along with using scripting tools like Bash shell scripts and Windows batch files to automate analysis.  Here we will use samtools again, this time to call <a href="https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism">SNP</a>s and (short) <a href="http://en.wikipedia.org/wiki/Indel">indel</a>s and to output <a href="http://en.wikipedia.org/wiki/Consensus_sequence">consensus sequence</a>s.  Again, we will use scripting to automate this process for each of our samples:</p>
+	
+	<script src="https://gist.github.com/CnrLwlss/5895260.js"></script>
+	
+	<p>The script above runs the samtools <a href="http://samtools.sourceforge.net/mpileup.shtml">mpileup</a> function, which generates output in the Variant Call Format (VCF) by default.  In order to skip that stage and move directly to the consensus sequence in .fastq format (sequence and quality measure for each of 17 chromosomes) the script above pipes the output from samtools mpileup directly to two other tools which are part of the samtools software: bcftools and the perl script vcfutils.  In any case there is an example snippet of the output for the first few bases from one chromosome from one yeast sample below:</p>
+
+<pre>
+@ref|NC_001133|
+mcmcaccacacccACACACCCACACACCACACCACACACCACACCACACCCACACACACA
+CATCCTAACACTACCCTAACACAGCCCTAATCTAACCCTGGCCAACCTGTCTCTCAACTT
+ACCCTCCATTACCCTGCCTCCACTCGTTACCCTGTCCCATTCAACCATACCACTCCGAAC
+CACCATCCATCCCTCTACTTACTACCACTCACCCACCGTTACCCTCCAATTACCCATATC
+</pre>
+	
+
 	</article>
 </body>	
 </html>
