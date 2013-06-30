@@ -96,7 +96,7 @@ TCATTAATGTACATGTAATAGAGATAGAACCACGTGTGTAGAATAGATTCAAGCACAACAATTCTGGAAATCCATTTGTG
 	<h3>samtools</h3>
 	<p>bowtie2 outputs alignments as uncompressed .sam files.  Many other tools for further analysis need alignments to be in the alternative, compressed, binary .bam format.  Fortunately there is another amazing, open-source, command-line tool which can do that (and many other useful things): <a href="http://samtools.sourceforge.net/">samtools</a>.</p>
 	
-	<p>The easiest way to install samtools under Linux is to check out the most recent source code from <a href="https://github.com/samtools/samtools">github</a>.  If you don't currently have git installed on your system, you will need to do that first.  In Ubuntu, for example, you can do this by executing the following command in a terminal:</p>
+	<p>To install samtools under Linux, check out the most recent source code from <a href="https://github.com/samtools/samtools">github</a>.  If you don't currently have git installed on your system, you will need to do that first.  In Ubuntu, for example, you can do this by executing the following command in a terminal:</p>
 	
 	<code>sudo apt-get install git</code>
 	
@@ -105,6 +105,8 @@ TCATTAATGTACATGTAATAGAGATAGAACCACGTGTGTAGAATAGATTCAAGCACAACAATTCTGGAAATCCATTTGTG
 	<code>git clone git://github.com/samtools/samtools.git</code>
 	
 	<p>The last command makes a directory called samtools.  Navigate into that directory and execute "make" to compile for your machine.  You will probably want to export the following three directories to your path before use: samtools samtools/bcftools samtools/misc</p>
+	
+	<p>To install samtools under Windows, you can download a .zip file containing pre-compiled binaries <a href="http://bow.codeplex.com/releases/view/879112">here</a>.  As for bowtie2, unzip the files to a target directory and add that directory to your path, as described <a href="http://www.computerhope.com/issues/ch000549.htm">here</a>.  Note that for generating consensus .fastq files (in a later post), you will additionally need to have a working <a href="http://strawberryperl.com/">perl</a> environment, and a copy of the vcfutils.pl script, which you can download from the samtools <a href="https://github.com/samtools/samtools/tree/develop/misc">github page</a>.
 	
 	<h2>Scripting to automate workflows</h2>
 	
