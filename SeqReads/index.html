@@ -86,8 +86,8 @@ TCATTAATGTACATGTAATAGAGATAGAACCACGTGTGTAGAATAGATTCAAGCACAACAATTCTGGAAATCCATTTGTG
 		</p>
 	
 	<h2>Software installation</h2>
-	<h3>bowtie2</h3>
-	<p>To align the reads to a reference sequence I use <a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a>, a very impressive, fast, <a href="https://en.wikipedia.org/wiki/Open_source">open-source</a>, <a href="http://en.wikipedia.org/wiki/Command-line_interface">command-line</a> tool.  It's easy to install on <a href="http://en.wikipedia.org/wiki/Linux">Linux</a> and <a href="http://en.wikipedia.org/wiki/Microsoft_Windows">Windows</a>.</p>
+	<h3><a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a></h3>
+	<p><a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a> is a very impressive, fast, <a href="https://en.wikipedia.org/wiki/Open_source">open-source</a>, <a href="http://en.wikipedia.org/wiki/Command-line_interface">command-line</a> tool to align short sequence reads to a reference sequence (<a href="http://www.nature.com/nmeth/journal/v9/n4/full/nmeth.1923.html">Langmead & Salzberg (2012)</a>).  It's easy to install on <a href="http://en.wikipedia.org/wiki/Linux">Linux</a> and <a href="http://en.wikipedia.org/wiki/Microsoft_Windows">Windows</a>.</p>
 	
 	<p>To install <a href="http://bowtie-bio.sourceforge.net/bowtie2">bowtie2</a> under Linux, first download the source code package (e.g. bowtie2-2.1.0-source.zip) from the files tab on the <a href="http://sourceforge.net/projects/bowtie-bio/?source=navbar">Bowtie sourceforge page</a>.  Then unzip to a target directory, navigate to the target directory and execute "make" to compile for your machine.  You will probably want to export the target directory to your path before use.</p>
 	
@@ -101,8 +101,8 @@ TCATTAATGTACATGTAATAGAGATAGAACCACGTGTGTAGAATAGATTCAAGCACAACAATTCTGGAAATCCATTTGTG
 	
 	<pre>bowtie2-align -x indices/SGD_S288C -1 data/SampleA_1_sequence.fq -2 data/SampleA_2_sequence.fq -S alignments/SampleA.sam -p 12 --end-to-end</pre>
 	
-	<h3>samtools</h3>
-	<p>bowtie2 outputs alignments as uncompressed .sam files.  Many other tools for further analysis need alignments to be in the alternative, compressed, binary .bam format.  Fortunately there is another amazing, open-source, command-line tool which can do that (and many other useful things): <a href="http://samtools.sourceforge.net/">samtools</a>.</p>
+	<h3><a href="http://samtools.sourceforge.net/">samtools</a></h3>
+	<p>bowtie2 outputs alignments as uncompressed .sam files.  Many other tools for further analysis need alignments to be in the alternative, compressed, binary .bam format.  Fortunately <a href="http://samtools.sourceforge.net/">samtools</a> is another amazing, open-source, command-line tool which can do that (and many other useful things) for us (<a href="http://dx.doi.org/10.1093/bioinformatics/btp352">Li et al. (2009))</a>.</p>
 	
 	<p>To install samtools under Linux, check out the most recent source code from <a href="https://github.com/samtools/samtools">github</a>.  If you don't currently have git installed on your system, you will need to do that first.  In Ubuntu, for example, you can do this by executing the following command in a terminal:</p>
 	
