@@ -26,15 +26,15 @@
 	
 	<h2>Introduction</h2>
 	
-	<p>In my last two posts I described aligning short reads (stored in .fastq format) produced by a sequencing machine against a reference sequence and visualising read-depth coverage along the genome.  In the final post in this series of three, I will describe the next step in the resequencing workflow: generating a <a href="http://en.wikipedia.org/wiki/Consensus_sequence">consensus genomic sequence</a> from a read-alignment (.bam file).</p>
+	<p>In my <a href="../seqCoverage">last</a> <a href="../seqReads">two</a> posts I described aligning short reads (stored in <a href="http://en.wikipedia.org/wiki/FASTQ_format">.fastq</a> format) produced by a sequencing machine against a reference sequence and visualising read-depth coverage along the genome.  In the final post in this series of three, I will briefly describe the next step in the resequencing workflow: generating a <a href="http://en.wikipedia.org/wiki/Consensus_sequence">consensus genomic sequence</a> from a read-alignment (.bam file).</p>
 	
 	<h3>Software & Scripting</h3>
 	
-	<p>In the first post in this series, I described installing the samtools software, along with using scripting tools like Bash shell scripts and Windows batch files to automate analysis.  Here we will use samtools again, this time to call <a href="https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism">SNP</a>s and (short) <a href="http://en.wikipedia.org/wiki/Indel">indel</a>s and to output <a href="http://en.wikipedia.org/wiki/Consensus_sequence">consensus sequence</a>s.  Again, we will use scripting to automate this process for each of our samples:</p>
+	<p>In the first post in this series, I described installing the <a href="http://samtools.sourceforge.net/">samtools</a> software, along with using scripting tools like Bash shell scripts and Windows batch files to automate analysis.  Here we will use <a href="http://samtools.sourceforge.net/">samtools</a> again, this time to call <a href="https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism">SNP</a>s and (short) <a href="http://en.wikipedia.org/wiki/Indel">indel</a>s and to output <a href="http://en.wikipedia.org/wiki/Consensus_sequence">consensus sequence</a>s.  Again, we will use scripting to automate this process for each of our samples:</p>
 	
 	<script src="https://gist.github.com/CnrLwlss/5895260.js"></script>
 	
-	<p>The script above runs the samtools <a href="http://samtools.sourceforge.net/mpileup.shtml">mpileup</a> function, which generates output in the Variant Call Format (VCF) by default.  In order to skip that stage and move directly to the consensus sequence in .fastq format (sequence and quality measure for each of 17 chromosomes) the script above pipes the output from samtools mpileup directly to two other tools which are part of the samtools software: bcftools and the perl script vcfutils.  In any case there is an example snippet of the output for the first few bases from one chromosome from one yeast sample below:</p>
+	<p>The script above runs the <a href="http://samtools.sourceforge.net/">samtools</a> <a href="http://samtools.sourceforge.net/mpileup.shtml">mpileup</a> function, which generates output in the <a href="http://en.wikipedia.org/wiki/Variant_Call_Format"Variant Call Format (VCF)</a> by default.  In order to skip that stage and move directly to the consensus sequence in .fastq format (sequence and quality measure for each of 17 chromosome "reads") the script above pipes the output from samtools mpileup directly to two other tools which are part of the samtools software: bcftools and the perl script vcfutils.  In order to get the last step to work under windows you will need a working <a href="http://strawberryperl.com/">perl</a> environment and a copy of the <a href="https://github.com/samtools/samtools/blob/develop/bcftools/vcfutils.pl">vcfutils.pl</a> <a href="http://strawberryperl.com/">perl</a> script which you can get from the samtools <a href="https://github.com/samtools/samtools/blob/develop/bcftools/vcfutils.pl">github</a> page.  In any case there is an example snippet of the output for the first few bases from one chromosome from one yeast sample below:</p>
 
 <pre>
 @ref|NC_001133|
@@ -43,6 +43,8 @@ CATCCTAACACTACCCTAACACAGCCCTAATCTAACCCTGGCCAACCTGTCTCTCAACTT
 ACCCTCCATTACCCTGCCTCCACTCGTTACCCTGTCCCATTCAACCATACCACTCCGAAC
 CACCATCCATCCCTCTACTTACTACCACTCACCCACCGTTACCCTCCAATTACCCATATC
 </pre>
+
+	<p>Accessing subsets of these consensus sequences (e.g. checking the sequence at an open-reading frame associated with your favourite gene) can be done programatically using the <a href="http://biopython.org/wiki/Main_Page">BioPython</a> library for <a href="http://www.python.org/">Python</a> (another excellent open-source programming language).</a>
 	
 
 	</article>

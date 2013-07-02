@@ -25,18 +25,18 @@
 	<article>
 	
 	<h2>Introduction</h2>
-	<p>In my last post I described the start of a typical high-throughput sequencing data analysis workflow: how to align paired-end reads, recorded in .fastq files, against a reference sequence.  The outputs from that workflow are .bam files describing the alignment of reads against the reference.  Such files are useful in several different contexts; I have had a number of requests for help with extracting read coverage (number of reads per nucleotide for some or all of the genome) from .bam files and so this seems like a natural place to start a new post.</p>
+	<p>In my <a href="../seqReads">last post</a> I described the start of a typical high-throughput sequencing data analysis workflow: how to align paired-end reads, recorded in <a href="http://en.wikipedia.org/wiki/FASTQ_format">.fastq</a> files, against a reference sequence.  The outputs from that workflow are <a href="http://www.broadinstitute.org/igv/BAM">.bam</a> files describing the alignment of reads against the reference.  Such files are useful in several different contexts; I have had a number of requests for help with extracting read coverage (number of reads per nucleotide for some or all of the genome) from .bam files and so this seems like a natural place to start a new post.</p>
 	
 	<a href="http://www.iontorrent.com/"><img src="http://singularityhub.com/wp-content/uploads/2010/12/IonTorrent_PGM.jpg" title="An IonTorrent machine, popular at Newcastle.  Can be used for doing ChIP-sequencing for example."></a>
 	
 	<p>Some reasons for being interested in coverage:</p>
 	<ol>
-		<li>Pilot sequencing runs: Have I gathered sufficient reads to observe SNPs, deletions or insertions along the sampled genome?  Sequencing experiments are often designed with a minimum required number of reads per base.  Trial sequencing runs can help determine the amount of sequencing time (and cost) required to achieve this minimum number of reads.</li>
+		<li>Pilot sequencing runs: Have I gathered sufficient reads to observe <a href="https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism">SNP</a>s, <a href="https://en.wikipedia.org/wiki/Deletion_(genetics)">deletions</a> or <a href="http://en.wikipedia.org/wiki/Insertion_(genetics)">insertions</a> along the sampled genome?  Sequencing experiments are often designed with a minimum required number of reads per base.  Trial sequencing runs can help determine the amount of sequencing time (and cost) required to achieve this minimum number of reads.</li>
 		<li>Genome-wide quality control: Are there any specific areas of the genome where my sequencing is running into trouble?  Regions of the genome with highly repetitive DNA, aneuploidy or gross <a href="http://en.wikipedia.org/wiki/Chromosomal_rearrangement">chromosomal rearrangements</a> can be detected by scanning the coverage along chromosomes.</li>
 		<li><a href="http://en.wikipedia.org/wiki/ChIP-sequencing">ChIP-seq</a> to identify protein-DNA interactions: the number of reads per base (coverage) is proportional to the affinity of the target protein for sequences along the genome.  In this case, estimating coverage is the primary purpose of the experiment.</li>
 	</ol>
 	
-	</p>My previous post includes a demonstration of the text contained in uncompressed alignment files (.sam files) and a <a href="http://samtools.sourceforge.net/SAM1.pdf">specification</a> document describing the meaning of the various sections</p>
+	</p>My <a href="../seqReads">previous post</a> includes a look at the text data contained in uncompressed alignment files (.sam files) and a <a href="http://samtools.sourceforge.net/SAM1.pdf">specification</a> document describing the meaning of the various sections</p>
 	
 	<h2>Software Installation</h2>
 	
@@ -73,7 +73,9 @@ biocLite("ShortRead")
 
 <a href="Chr11.pdf"><img src="Chr11.png" title="Coverage along human chromosome 11 for a sample genome from the 1,000 genomes project at the EBI." width = 1000px></a>
 
+<p>By writing a more complicated <a href="https://gist.github.com/CnrLwlss/5910629">example script</a>, also using ShortRead, we can visualise coverage along the circular, <a href="https://en.wikipedia.org/wiki/Mitochondrial_DNA">mitochondrial genome</a> during a <a href="http://en.wikipedia.org/wiki/ChIP-sequencing">ChIP-seq</a> experiment.  The script reads in a text file for annotating the <a href="https://en.wikipedia.org/wiki/Mitochondrial_DNA">mitochondrial genome</a> (which you can download <a href="http://lwlss.net/dwnlds/mtDNA_Colours.txt">here</a>) and a .bam alignment file (which you can download <a href="http://lwlss.net/dwnlds/IonXpress_017_R_2012_12_11_09_08_56_user_SN1-54_Auto_user_SN1-54_53.bam">here</a>) and uses these to produces plots like the one below.</p>
 
+<a href="CHiP.svg"><img src="CHiP.png" title="Visualising coverage along the mitochondrial genome during a CHiP-seq experiment" width = 600px></a>
 	
 	</article>
 </body>	

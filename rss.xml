@@ -6,6 +6,60 @@
  <description>Articles on topics like mathematical modelling, programming, video making, photography, general rants and anything else that springs to mind.</description>
  <language>en</language>
  
+  <item>
+ <title>Extracting read coverage per base</title>
+ <link>http://cnr.lwlss.net/seqCoverage</link>
+ <description>
+ 	&lt;h2&gt;Introduction&lt;/h2&gt;
+	&lt;p&gt;In my &lt;a href=&quot;../seqReads&quot;&gt;last post&lt;/a&gt; I described the start of a typical high-throughput sequencing data analysis workflow: how to align paired-end reads, recorded in &lt;a href=&quot;http://en.wikipedia.org/wiki/FASTQ_format&quot;&gt;.fastq&lt;/a&gt; files, against a reference sequence.  The outputs from that workflow are &lt;a href=&quot;http://www.broadinstitute.org/igv/BAM&quot;&gt;.bam&lt;/a&gt; files describing the alignment of reads against the reference.  Such files are useful in several different contexts; I have had a number of requests for help with extracting read coverage (number of reads per nucleotide for some or all of the genome) from .bam files and so this seems like a natural place to start a new post.&lt;/p&gt;
+	
+	&lt;a href=&quot;http://www.iontorrent.com/&quot;&gt;&lt;img src=&quot;http://singularityhub.com/wp-content/uploads/2010/12/IonTorrent_PGM.jpg&quot; title=&quot;An IonTorrent machine, popular at Newcastle.  Can be used for doing ChIP-sequencing for example.&quot;&gt;&lt;/a&gt;
+	
+	&lt;p&gt;Some reasons for being interested in coverage:&lt;/p&gt;
+	&lt;ol&gt;
+		&lt;li&gt;Pilot sequencing runs: Have I gathered sufficient reads to observe &lt;a href=&quot;https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism&quot;&gt;SNP&lt;/a&gt;s, &lt;a href=&quot;https://en.wikipedia.org/wiki/Deletion_(genetics)&quot;&gt;deletions&lt;/a&gt; or &lt;a href=&quot;http://en.wikipedia.org/wiki/Insertion_(genetics)&quot;&gt;insertions&lt;/a&gt; along the sampled genome?  Sequencing experiments are often designed with a minimum required number of reads per base.  Trial sequencing runs can help determine the amount of sequencing time (and cost) required to achieve this minimum number of reads.&lt;/li&gt;
+		&lt;li&gt;Genome-wide quality control: Are there any specific areas of the genome where my sequencing is running into trouble?  Regions of the genome with highly repetitive DNA, aneuploidy or gross &lt;a href=&quot;http://en.wikipedia.org/wiki/Chromosomal_rearrangement&quot;&gt;chromosomal rearrangements&lt;/a&gt; can be detected by scanning the coverage along chromosomes.&lt;/li&gt;
+		&lt;li&gt;&lt;a href=&quot;http://en.wikipedia.org/wiki/ChIP-sequencing&quot;&gt;ChIP-seq&lt;/a&gt; to identify protein-DNA interactions: the number of reads per base (coverage) is proportional to the affinity of the target protein for sequences along the genome.  In this case, estimating coverage is the primary purpose of the experiment.&lt;/li&gt;
+	&lt;/ol&gt;
+	
+	&lt;/p&gt;My &lt;a href=&quot;../seqReads&quot;&gt;previous post&lt;/a&gt; includes a look at the text data contained in uncompressed alignment files (.sam files) and a &lt;a href=&quot;http://samtools.sourceforge.net/SAM1.pdf&quot;&gt;specification&lt;/a&gt; document describing the meaning of the various sections&lt;/p&gt;
+ </description>
+ </item>
+ 
+ <item>
+ <title>Aligning raw sequencing data</title>
+ <link>http://cnr.lwlss.net/seqReads</link>
+ <description>
+ 	&lt;h2&gt;Introduction&lt;/h2&gt;
+	&lt;p&gt;Over the last couple of months I&#039;ve been asked for help analyzing several different sets of &lt;a href=&quot;http://en.wikipedia.org/wiki/DNA_sequencing#Next-generation_methods&quot;&gt;high-throughput sequencing&lt;/a&gt; data.  This is not really my area, but I can see why I&#039;m being approached: it&#039;s obvious that I use computers and big computers are required to extract information from these data.  So, as a note to my future self and as a pointer for others I decided to write three posts describing some of the computing workflows I&#039;ve been using.  I&#039;ve been pleasantly surprised at how straightforward it is.  Please add any criticism to this post on Google+.  I&#039;d love to learn how to do better and update these posts.&lt;/p&gt;
+	
+	&lt;h2&gt;Raw sequencing data&lt;/h2&gt;
+	
+	&lt;a href=&quot;http://www.illumina.com/&quot; title=&quot;An illumina sequencer.  Although some of our sequencing is done using illumna machines, I&#039;ve no idea if it&#039;s this particular model&quot;&gt;&lt;img src=&quot;http://res.illumina.com/images/technology/genome_analyzer_lg.jpg&quot; width=500&gt;&lt;/a&gt;
+	
+	&lt;p&gt;One project I&#039;m involved with is comparing the &lt;a href=&quot;http://www.ncbi.nlm.nih.gov/projects/genome/probe/doc/TechResequencing.shtml&quot;&gt;resequenced&lt;/a&gt; genotypes of several &lt;i&gt;&lt;a href=&quot;http://en.wikipedia.org/wiki/Saccharomyces_cerevisiae&quot;&gt;S. cerevisiae&lt;/a&gt;&lt;/i&gt; populations.  Cell samples were prepared in the lab and sent off to an external sequencing service provider, who carried out paired-end sequencing on an Illumina machine.   About a month later, they sent an email informing us that the data were ready and pointed us to a password protected webserver where we could download them.  Data in this case consisted of 24 .fastq.gz files (2 per sample) approximately 1.2Gb each.  You can see some examples of the contents of .fastq files, and some tips for how to read them in &lt;a href=&quot;http://www.staff.ncl.ac.uk/d.j.wilkinson/&quot;&gt;Darren Wilkinson&lt;/a&gt;&#039;s &lt;a href=&quot;http://darrenjw.wordpress.com/2010/11/28/introduction-to-the-processing-of-short-read-next-generation-sequencing-data/&quot;&gt;post&lt;/a&gt; on processing sequencing data.  Below is a snippet of uncompressed raw data from a &lt;a href=&quot;http://en.wikipedia.org/wiki/FASTQ_format&quot;&gt;.fastq&lt;/a&gt; file:&lt;/p&gt;
+	
+	&lt;pre&gt;
+@HISEQ:178:C23RCACXX:5:1101:1913:2210 1:N:0:CGATGT
+CGTGGATCTTAGCAGAATGGGCTATAATTGGGAAGGTAACGAATTTTCATATCACATGCTGCTTGTATCTCAATACATGTTGAATGCAGGATTACTCCAAA
++
+1=1=ABDDFBECECBECBDAF3FEE?E@4A+:CBED?DGICFGDCE@?999?/?*9CBBAEE3@CFF@;CE7@EE?E:?CABB3?@EAA@((5@@######
+@HISEQ:178:C23RCACXX:5:1101:2634:2072 1:N:0:CGATGT
+ACTCCCATCGCTCTACATTATCCGATCCAAAGCAGATGTTGAGAAAAGCATCCACTGGTAGCTCAAACGATCCAAGCGCTATGACTCCTTTTTCTTCAGTA
++
+E@@DDDDDFFDAFGIII@HBHFCGCFHEB9?@GHGEFFHBFCHGGHIIFCGI)B=C@GIGG:DHGIGE/=B;;36;??;@;?ACCCCC:&gt;CCC&gt;CC&gt;CCE:
+@HISEQ:178:C23RCACXX:5:1101:2675:2124 1:N:0:CGATGT
+AATTTCACGTACTTTTTCACTCTCTTTTCAAAGTTCTTTTCATCTTTCCATCACTGTACTTGTTCGCTATCGGTCTCTCGCCAATATTTAGCTTTAGATGG
++
+@@@FFDFFHDFFFIIIJ;CEIFGHHGIJHIJJJGHEGHIJEHIHIIIGEG&gt;F&gt;GGHHJHGIHIIIIIGHIJIBEAAEEEFDDDDCDDEDCDDDCDCCDD@C
+@HISEQ:178:C23RCACXX:5:1101:2824:2166 1:N:0:CGATGT
+TCATTAATGTACATGTAATAGAGATAGAACCACGTGTGTAGAATAGATTCAAGCACAACAATTCTGGAAATCCATTTGTGGAGAGGTAACAATGCTAAGTA
++
+?@@=DDDDF????GHBGGDH@HG@C@EDH?CEDAFG?EF4?BFAEEBE@4?BGBDGCH@@FHGBCFHGIEHFG@DGEHHFE:?DEE766@ECCCCA@CC5;
+	&lt;/pre&gt;
+ </description>
+ </item>
+ 
  <item>
  <title>Constrained Random Walks</title>
  <link>http://cnr.lwlss.net/ConstrainedRandomWalk</link>
@@ -19,6 +73,7 @@
 	
 	&lt;p&gt;The video above is made from two, constrained, one-dimensional &lt;a href=&quot;http://en.wikipedia.org/wiki/Random_walk&quot;&gt;random walks&lt;/a&gt; through the frames of a video clip.  The constraint here is that both output videos begin and end with the same frame from the original clip.  Both videos have same number of output frames, but take different, random paths through the original set of frames.  In this article, I&#039;ll outline how to generate such constrained random walks.  Note that, for carrying out a walk in video frame space, it is important to use a discrete random walk and not a Gaussian random walk (or &lt;a href=&quot;http://en.wikipedia.org/wiki/Wiener_process&quot;&gt;Weiner process&lt;/a&gt;).  This constrained, discrete random walk process is probably closely related to a &lt;a href=&quot;http://en.wikipedia.org/wiki/Brownian_bridge&quot;&gt;Brownian bridge&lt;/a&gt;. &lt;/p&gt;
  </description>
+ </item>
  
  <item>
  <title>Mass action and the logistic population model</title>
