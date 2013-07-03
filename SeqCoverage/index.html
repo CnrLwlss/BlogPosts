@@ -65,7 +65,15 @@ biocLite("ShortRead")
 
 <h2>Analysis</h2>
 
+<h3>Human Chromosome 11</h3>
+
 <p>Here is a simple example script which uses the R package ShortRead to visualise coverage.  It takes reads from a human genome (chromosome 11) which was sequenced as part of the <a href="http://www.1000genomes.org/">1,000 genomes</a> project.  You can download the .bam file <a href="ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data/HG00100/alignment/HG00100.chrom11.ILLUMINA.bwa.GBR.low_coverage.20130415.bam">here</a>.</p>
+
+<p>To run the script yourself, place the .bam file into a directory on your computer and set the "working directory" in your R session to point to that directory.  For example, using the R GUI under Windows, click on the R Console window to bring it into focus and select File -> Change Dir to navigate to the directory containing the .bam file.  There are several ways to run the script, but probably the clearest is to save the script to a text file in the same directory.  Give it a name like "Coverage.R".  Then run it by typing the following command in the R console (followed by ENTER):</p>
+
+<pre>
+source("Coverage.R")
+</pre>
 
 <script src="https://gist.github.com/CnrLwlss/5895076.js"></script>
 
@@ -73,10 +81,30 @@ biocLite("ShortRead")
 
 <a href="Chr11.pdf"><img src="Chr11.png" title="Coverage along human chromosome 11 for a sample genome from the 1,000 genomes project at the EBI." width = 1000px></a>
 
-<p>By writing a more complicated <a href="https://gist.github.com/CnrLwlss/5910629">example script</a>, also using ShortRead, we can visualise coverage along the circular, <a href="https://en.wikipedia.org/wiki/Mitochondrial_DNA">mitochondrial genome</a> during a <a href="http://en.wikipedia.org/wiki/ChIP-sequencing">ChIP-seq</a> experiment.  The script reads in a text file for annotating the <a href="https://en.wikipedia.org/wiki/Mitochondrial_DNA">mitochondrial genome</a> (which you can download <a href="http://lwlss.net/dwnlds/mtDNA_Colours.txt">here</a>) and a .bam alignment file (which you can download <a href="http://lwlss.net/dwnlds/IonXpress_017_R_2012_12_11_09_08_56_user_SN1-54_Auto_user_SN1-54_53.bam">here</a>) and uses these to produces plots like the one below.</p>
+<p>If you have your own .bam file you can use the script above to visualise coverage by copying it to your working directory, changing the sname and chrname variables in the "showReads.R" text file you have just created and running the script again.</p>
 
-<a href="CHiP.svg"><img src="CHiP.png" title="Visualising coverage along the mitochondrial genome during a CHiP-seq experiment" width = 600px></a>
-	
+<h3>Human Mitochondrial DNA</h3>
+
+<p>By writing a more complicated <a href="https://gist.github.com/CnrLwlss/5910629">example script</a>, also using ShortRead, we can visualise coverage along the circular, <a href="https://en.wikipedia.org/wiki/Mitochondrial_DNA">mitochondrial genome</a> during a <a href="http://en.wikipedia.org/wiki/ChIP-sequencing">ChIP-seq</a> experiment.  The script reads in a text file for annotating the <a href="https://en.wikipedia.org/wiki/Mitochondrial_DNA">mitochondrial genome</a> (which you can download <a href="http://lwlss.net/dwnlds/mtDNA_Colours.txt">here</a>) and a .bam alignment file (which you can download <a href="http://lwlss.net/dwnlds/IonXpress_018_R_2012_12_11_09_08_56_user_SN1-54_Auto_user_SN1-54_53.bam">here</a>) and uses these to produce
+ plots like the one below.</p>
+ 
+<a href="CHiP.svg"><img src="CHiP.png" title="Visualising coverage along the mitochondrial genome during a CHiP-seq experiment. Click for a zoomable, vector-graphics version of this plot." width = 600px></a>
+
+ <p>As well as a working version of R and the ShortReads package, this mtDNA script requires two additional packages: plotrix and ecolitk, which can be installed by executing the following commands (and following the on-screen instructions) inside an R console:</p>
+ 
+ <pre>
+install.packages("plotrix")
+source("http://bioconductor.org/biocLite.R")
+biocLite("ecolitk")
+ </pre>
+ 
+ <p>To run the script, download the <a href="http://lwlss.net/dwnlds/mtDNA_Colours.txt">mtDNA_Colours.txt</a> file and the <a href="http://lwlss.net/dwnlds/IonXpress_018_R_2012_12_11_09_08_56_user_SN1-54_Auto_user_SN1-54_53.bam">.bam alignment file</a> to your working directory.  Copy the contents of the <a href="https://gist.github.com/CnrLwlss/5910629">example script</a> to a text file in your working directory, called "mtDNA.R" for example.  You can edit the <a href="http://lwlss.net/dwnlds/mtDNA_Colours.txt">mtDNA_Colours.txt</a> file to change gene labels for instance (though this file must remain in tab-delimited text format).  By editing the last line of the script, you can also change the name of the alignment file to be analysed, maximum number of reads for the plotted histogram (readmax), histogram colour (histColour), whether the number of reads is plotted on a log scale (logged=TRUE) or on a linear scale (logged=FALSE), as well as the text appearing in the centre of the circle (label).</p>
+ 
+ <p>Finally, you can execute the script as above, by executing the following command in the windows GUI R console:</p>
+ 
+ <pre>
+source("mtDNA.R")
+</pre>
 	</article>
 </body>	
 </html>
