@@ -1,0 +1,89 @@
+label{
+    display: inline-block;
+    float: left;
+    clear: left;
+    width: 250px;
+    text-align: right;
+}
+input {
+  display: inline-block;
+  float: left;
+}
+
+.yaxis{
+  shape-rendering: crispEdges;
+  font: 15px sans-serif;	
+}
+
+.yaxis line, .yaxis path {
+  fill: none;
+  stroke: black;
+  stroke-width: 2;
+}
+
+.xaxis{
+  shape-rendering: crispEdges;
+  font: 15px sans-serif;	
+}
+
+.xaxis line, .xaxis path {
+  fill: none;
+  stroke: black;
+  stroke-width: 2;
+}
+
+.axlab {
+  shape-rendering: crispEdges;
+  font: 20px sans-serif;	
+}
+
+.curve {
+	stroke: steelblue;
+	stroke-width: 3;
+	fill: none;
+}
+
+.arrow {
+	stroke: red;
+	stroke-width: 1;
+	fill: none;
+}
+
+.arrowtext {
+	color:red;
+	font-weight: bold;
+	font: 25px sans-serif;
+}
+
+.arrowtext text{
+	color:red;
+	font-weight: bold;
+	font: 25px sans-serif;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.hide {
+	opacity: 0;
+}
+
+.ygrid .tick {
+	stroke: lightgrey;
+	opacity: 0.7;
+	stroke-width: 2;
+}
+.ygrid path {
+	stroke-width: 10;
+}
+
+.xgrid .tick {
+	stroke: lightgrey;
+	opacity: 0.7;
+	stroke-width: 2;
+}
+.xgrid path {
+	stroke-width: 10;
+}

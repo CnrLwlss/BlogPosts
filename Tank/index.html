@@ -1,0 +1,76 @@
+<!DOCTYPE doctype html>
+
+<html lang="en">
+<head>
+	<title>Horizontal cylindrical tank</title>
+	<meta charset='utf-8' content="" name="description"/>
+		<link href="../CLstyle.css" rel="stylesheet" type="text/css"></link>
+		<link href="Tank.css" rel="stylesheet" type="text/css"></link>
+		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"></link>
+	</meta>
+	<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+	<script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js"></script>
+	<script type="text/javascript" src="Tank.js"></script>
+
+</head>
+
+<body onload="javascript:drawPlot(1,1,1)">
+
+<article>
+<header>
+	<h1>Liquid volume in a horizontal cylindrical tank</h1>
+	<time datetime="2013-10-19T15:16:00Z">15:16 Saturday 19th October 2013</time>
+</header>
+
+<p>Consider a horizontal, cylindrical tank, partially filled with liquid.  Measuring the height of liquid in the tank is relatively straightforward, you could use a <a href=http://en.wikipedia.org/wiki/Dipstick">dipstick</a> or another more <a href="http://www.sensorsmag.com/sensors/leak-level/a-dozen-ways-measure-fluid-level-and-how-they-work-1067">sophisticated</a> <a href="http://en.wikipedia.org/wiki/Level_sensor">alternative</a>.  However, for most purposes, the volume of liquid remaining in the tank is more interesting.  In this article, I'll show how to calculate the liquid volume remaining in the tank, given the liquid height and present a dynamic, interactive plot which describes the non-linear relationship between height and volume in this system.</p>
+
+<a href="TankDrawings.svg"><img src="TankDrawings.svg" width="600px"></a>
+
+<p>The diagram and cross-section above show a horizontal tank of length $L$ and inner radius $R$ filled to a height $H$.  Assume that $H$ can be measured accurately.  The bottom panel shows the tank cross-section rotated 90&deg; counter-clockwise.  Horizontal and vertical distances from the centre of the cross-section ($a$ and $b$ respectively) can be written as functions of the angle $\theta$:</p>
+
+<p>
+ $\sin \theta=\frac{b}{R}\\
+\cos \theta=\frac{a}{R}$
+</p>
+
+<p>Eliminating $\theta$ we can write down an expression for $b$ in terms of $a$:</p>
+
+<p>
+$b=R\sin \arccos \frac{a}{R}$
+</p>
+
+<p>The area between the upper curve in the rotated cross-section (excluding the area coloured blue) and the horizontal dashed line corresponds to half of the unfilled cross-sectional area of the tank.  This area can be calculated by integrating $b$ from $-R$ to $R-H$ allowing us to write an expression for the total unfilled cross-sectional area (the white area in the cross-sections above):</p>
+
+<p>
+$A_{unfilled}=2\int_{-R}^{R-H}R\sin \arccos \frac{a}{R} \mathrm{d}a$
+</p>
+
+<p>The integral above does have an analytical solution.  Subtracting $A_{unfilled}$ from the total cross-sectional area to give the filled area, and multiplying by the tank length to give the filled volume, we can write down the following expression for liquid volume in terms of $H$:</p>
+
+<p>
+$V_{filled}(H)=\frac{\pi R^2L}{2}-RL\left( (R-H)\sqrt{\frac{H(2R-H)}{R^2}}+R\arcsin \left(1-\frac{H}{R}\right) \right)$
+</p>
+
+<p>The function above can be used to calculate $V_{filled}$ given the variable $H$ and fixed parameters describing the tank dimensions: $R$ and $L$.</p>  
+
+<div id ="graph" class='content'>
+	 <!-- /the chart goes here -->
+</div>
+<script type="text/javascript" src="Tank.js"></script>
+<form name="params" method="post">
+	<label>Tank radius (m): </label><input type="number" id="R" value="1.0" min="0.0" onchange="javascript:transitionPlot(R.value,L.value,scaleFactor.value)"><br>
+	<label>Tank length (m): </label><input type="number" id="L" value="1.0" min="0.0"  onchange="javascript:transitionPlot(R.value,L.value,scaleFactor.value)"><br><br>
+	<label>Plot fraction: </label><input type="number" id="scaleFactor" value="1.0" min="0.0" max="1.0" step="0.1" onchange="javascript:transitionPlot(R.value,L.value,scaleFactor.value)">
+</form>
+
+
+<p>The interactive plot above shows the functional relationship between volume and liquid height for a given set of tank dimensions.  Hover the mouse above the x-axis to see the liquid volume corresponding to a given depth.  If you adjust the tank dimensions specified in the boxes below the plot, the curve and units on the axes will update dynamically to reflect the change.  Finally the box labelled 'Plot fraction' allows you to zoom in on the bottom half of the curve to allow more precise readings.</p>
+
+<p>The plot was created using the <a href="http://d3js.org/">D3.js</a> javascript library.  The diagram is an <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">SVG</a> scaleable graphics image.  Equations are written in <a href="http://en.wikipedia.org/wiki/LaTeX">LaTeX</a> and rendered using the <a href="http://www.mathjax.org/">MathJax</a> javascript library.</p>
+
+
+</article>
+
+</body>
+</html>

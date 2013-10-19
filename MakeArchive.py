@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import time, calendar, os, sys
 import pandas
 
-
 def ordinal(n):
     '''Integer to ordinal for 1-100'''
     if 10 < n < 14: return u'%sth' % n
@@ -68,7 +67,8 @@ pagedata["Time"]=times
 pagedata["Datetime"]=datetimes
 
 # Sort as you like...
-pagedata=pagedata.sort(columns=["Datetime","Title"],inplace=True,ascending=False)
+pagedata.sort(columns=["Datetime","Title"],inplace=True,ascending=False)
+
 pagedata.index=range(0,len(pagedata["URL"]))
 
 headerString='''
@@ -85,7 +85,7 @@ headerString='''
 <body><header><h1>Archive</h1></header>
 <article>
 
-<p>Articles sorted by title <a href="byname.html">here</a>.</p>
+<p>Articles sorted by title <a href="byname.html">here</a>.  Alternatively <a href="http://cnr.lwlss.net">go home</a>.</p>
 
 <ul>
 '''
@@ -120,8 +120,27 @@ archiveFile.write(headerString+listString+tailString)
 archiveFile.close()
 
 # Different sorting
-pagedata=pagedata.sort(columns=["Title","Datetime"],inplace=True)
+pagedata.sort(columns=["Title","Datetime"],inplace=True)
 pagedata.index=range(0,len(pagedata["URL"]))
+
+headerString='''
+<!DOCTYPE doctype html>
+
+<html lang="en">
+<head><title>Archive (alphabetical order)</title>
+<meta charset="utf-8">
+
+<meta content="" name="description"/>
+<link href="../CLstyle.css" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+</link></link></meta></head>
+<body><header><h1>Archive</h1></header>
+<article>
+
+<p>Articles sorted by date <a href="index.html">here</a>.  Alternatively <a href="http://cnr.lwlss.net">go home</a>.</p>
+
+<ul>
+'''
 
 listString=''''''
 

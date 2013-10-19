@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+	<meta charset=utf-8> 
+	<meta name="desciption" content="Calculating the volume of liquid in a horizontal cylindrical tank: D3 visualisation">
+	<title>Volume of liquid in a horizontal cyclindrical tank</title>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'></link>
+	<link rel="stylesheet" type="text/css" href="CLstyle.css"></link>
+	<link rel="stylesheet" type="text/css" href="Tank.css"></link>
+	<script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js"></script>
+</head>
+<body onload="drawPlot(1,1,1)">
+	<div id ="graph" class='content'>
+		 <!-- /the chart goes here -->
+	</div>
+		<form name="params" method="post">
+			<label>Tank radius (m): </label><input type="number" id="R" value="1.0" min="0.0" onchange="transitionPlot(R.value,L.value,scaleFactor.value)"><br>
+			<label>Tank length (m): </label><input type="number" id="L" value="1.0" min="0.0"  onchange="transitionPlot(R.value,L.value,scaleFactor.value)"><br><br>
+			<label>Plot fraction: </label><input type="number" id="scaleFactor" value="1.0" min="0.0" max="1.0" step="0.1" onchange="transitionPlot(R.value,L.value,scaleFactor.value)">
+		</form>
+	<script type="text/javascript" src="Tank.js"></script>
+</body>
+</html>
