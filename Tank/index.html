@@ -15,7 +15,7 @@
 
 </head>
 
-<body onload="javascript:drawPlot(1,1,1)">
+<body onload="drawPlot(1,1,1)">
 
 <article>
 <header>
@@ -59,16 +59,14 @@ $V_{filled}(H)=\frac{\pi R^2L}{2}-RL\left( (R-H)\sqrt{\frac{H(2R-H)}{R^2}}+R\arc
 </div>
 <script type="text/javascript" src="Tank.js"></script>
 <form name="params" method="post">
-	<label>Tank radius (m): </label><input type="number" id="R" value="1.0" min="0.0" onchange="javascript:transitionPlot(R.value,L.value,scaleFactor.value)"><br>
-	<label>Tank length (m): </label><input type="number" id="L" value="1.0" min="0.0"  onchange="javascript:transitionPlot(R.value,L.value,scaleFactor.value)"><br><br>
-	<label>Plot fraction: </label><input type="number" id="scaleFactor" value="1.0" min="0.0" max="1.0" step="0.1" onchange="javascript:transitionPlot(R.value,L.value,scaleFactor.value)">
+	<label>Tank radius (m): </label><input type="number" id="R" value="1.0" min="0.0" onchange="transitionPlot(R.value,L.value,scaleFactor.value)"><br>
+	<label>Tank length (m): </label><input type="number" id="L" value="1.0" min="0.0"  onchange="transitionPlot(R.value,L.value,scaleFactor.value)"><br><br>
+	<label>Plot fraction: </label><input type="number" id="scaleFactor" value="1.0" min="0.0" max="1.0" step="0.1" onchange="transitionPlot(R.value,L.value,scaleFactor.value)">
 </form>
-
-
+<br>
 <p>The interactive plot above shows the functional relationship between volume and liquid height for a given set of tank dimensions.  Hover the mouse above the x-axis to see the liquid volume corresponding to a given depth.  If you adjust the tank dimensions specified in the boxes below the plot, the curve and units on the axes will update dynamically to reflect the change.  Finally the box labelled 'Plot fraction' allows you to zoom in on the bottom half of the curve to allow more precise readings.</p>
 
 <p>The plot was created using the <a href="http://d3js.org/">D3.js</a> javascript library.  The diagram is an <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">SVG</a> scaleable graphics image.  Equations are written in <a href="http://en.wikipedia.org/wiki/LaTeX">LaTeX</a> and rendered using the <a href="http://www.mathjax.org/">MathJax</a> javascript library.</p>
-
 
 </article>
 
