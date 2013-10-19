@@ -66,7 +66,7 @@ The function above can be used to calculate $V_{filled}$ given the variable $H$ 
 <div id ="graph" class='content'>
 	 <!-- /the chart goes here -->
 </div>
-
+<script type="text/javascript" src="Tank.js"></script>
 <form name="params" method="post">
 	<label>Tank radius (m): </label><input type="number" id="R" value="1.0" min="0.0" onchange="transitionPlot(R.value,L.value,scaleFactor.value)"><br>
 	<label>Tank length (m): </label><input type="number" id="L" value="1.0" min="0.0"  onchange="transitionPlot(R.value,L.value,scaleFactor.value)"><br><br>
@@ -80,8 +80,9 @@ The interactive plot above shows the functional relationship between volume and 
 <p>
 The plot was created using the <a href="http://d3js.org/">D3.js</a> javascript library.  The diagram is an <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics">SVG</a> scaleable graphics image.  Equations are written in <a href="http://en.wikipedia.org/wiki/LaTeX">LaTeX</a> and rendered using the <a href="http://www.mathjax.org/">MathJax</a> javascript library.
 </p>
+
+
 </article>
 
-<script type="text/javascript" src="Tank.js"></script>
 </body>
 </html>
