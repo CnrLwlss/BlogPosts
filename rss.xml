@@ -5,8 +5,83 @@
  <link>http://cnr.lwlss.net</link>
  <description>Articles on topics like mathematical modelling, programming, video making, photography, general rants and anything else that springs to mind.</description>
  <language>en</language>
+
+<item>
+  <title>Liquid volume in a horizontal cylindrical tank</title>
+ <link>http://cnr.lwlss.net/Tank/</link>
+ <description>
+&lt;p&gt;
+Consider a horizontal, cylindrical tank, partially filled with liquid.  Measuring the height of liquid in the tank is relatively straightforward, you could use a &lt;a href=&quot;http://en.wikipedia.org/wiki/Dipstick&quot;&gt;dipstick&lt;/a&gt; or another more &lt;a href=&quot;http://www.sensorsmag.com/sensors/leak-level/a-dozen-ways-measure-fluid-level-and-how-they-work-1067&quot;&gt;sophisticated&lt;/a&gt; &lt;a href=&quot;http://en.wikipedia.org/wiki/Level_sensor&quot;&gt;alternative&lt;/a&gt;.  However, for most purposes, the volume of liquid remaining in the tank is more interesting.  In this article, I&#039;ll show how to calculate the liquid volume remaining in the tank, given the liquid height and present a dynamic, interactive plot which describes the non-linear relationship between height and volume in this system.
+&lt;/p&gt;
+
+&lt;a href=&quot;TankDrawings.svg&quot;&gt;&lt;img src=&quot;TankDrawings.svg&quot; width=&quot;600px&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;
+The diagram and cross-section above show a horizontal tank of length $L$ and inner radius $R$ filled to a height $H$.  Assume that $H$ can be measured accurately.  The bottom panel shows the tank cross-section rotated 90&amp;deg; counter-clockwise.  Horizontal and vertical distances from the centre of the cross-section ($a$ and $b$ respectively) can be written as functions of the angle $\theta$:
+&lt;/p&gt;
+ </description>
  
-  <item>
+ 
+ </item> 
+ 
+ 
+ 
+ 
+ 
+<item>
+  <title>Holiday in the highlands</title>
+ <link>http://cnr.lwlss.net/Highlands2013/</link>
+ <description>
+&lt;a href=&quot;http://www.flickr.com/photos/conchur/9743173506/&quot; title=&quot;Katy in Glen Coe&quot;&gt;&lt;img src=&quot;http://farm8.staticflickr.com/7377/9743173506_a4063a751d.jpg&quot; height=&quot;214&quot; alt=&quot;KTMountain2&quot;&gt;&lt;/a&gt;
+	&lt;a href=&quot;http://www.flickr.com/photos/conchur/9743184726/&quot; title=&quot;Sunset in Ballachulish&quot;&gt;&lt;img src=&quot;http://farm8.staticflickr.com/7394/9743184726_8bf277fae2_n.jpg&quot; width=&quot;320&quot; height=&quot;214&quot; alt=&quot;BallachulishSunset4&quot;&gt;&lt;/a&gt;
+	
+	&lt;p&gt;
+	During the week, Katy and I went on an emergency, last minute holiday to &lt;a href=&quot;http://en.wikipedia.org/wiki/Ballachulish&quot;&gt;Ballachulish&lt;/a&gt;, a small village, built on either shore of &lt;a href=&quot;http://en.wikipedia.org/wiki/Loch_Leven_(Highlands)&quot;&gt;Loch Leven&lt;/a&gt; in the &lt;a href=&quot;http://en.wikipedia.org/wiki/Scottish_Highlands&quot;&gt;Scottish Highlands&lt;/a&gt;.  It&#039;s surrounded by mountains, particularly &lt;a href=&quot;http://en.wikipedia.org/wiki/Beinn_a&#039;_Bheithir&quot;&gt;Beinn a&#039; Bheithir&lt;/a&gt; to the south, which has three peaks with elevation around 1,000m: about level with &lt;a href=&quot;http://en.wikipedia.org/wiki/Carrauntoohil&quot;&gt;Carrauntoohil&lt;/a&gt;, the highest peak in Ireland.  Ballachulish is just a couple of miles from &lt;a href=&quot;http://en.wikipedia.org/wiki/Glen_Coe&quot;&gt;Glen Coe&lt;/a&gt;, a jawdroppingly beautiful volcanic glen which must have some of the most spectacular scenery in Europe in clear weather.
+	&lt;/p&gt;
+	
+	&lt;a href=&quot;http://www.flickr.com/photos/conchur/9741071183/&quot; title=&quot;View from the studio in Rowanbrae one cloudy evening&quot;&gt;&lt;img src=&quot;http://farm8.staticflickr.com/7298/9741071183_4e5e185b0f_n.jpg&quot; width=&quot;320&quot; height=&quot;214&quot; alt=&quot;MistyMountains&quot;&gt;&lt;/a&gt;
+	&lt;a href=&quot;http://www.flickr.com/photos/conchur/9741064677/&quot; title=&quot;Some slate near North Ballichulish&quot;&gt;&lt;img src=&quot;http://farm8.staticflickr.com/7450/9741064677_65c02e7028_n.jpg&quot; width=&quot;320&quot; height=&quot;214&quot; alt=&quot;BallachulishSlate&quot;&gt;&lt;/a&gt;
+	&lt;a href=&quot;http://www.flickr.com/photos/conchur/9743177836/&quot; title=&quot;Glencoe village across Loch Leven&quot;&gt;&lt;img src=&quot;http://farm8.staticflickr.com/7289/9743177836_ce7d603257_n.jpg&quot; width=&quot;320&quot; height=&quot;214&quot; alt=&quot;GlencoeVillage&quot;&gt;&lt;/a&gt;
+ </description>
+ 
+ 
+ </item>
+ 
+ 
+ 
+ 
+ 
+<item>
+  <title>Cycling near Hadrian's wall</title>
+ <link>http://cnr.lwlss.net/HadrianCycleway/</link>
+ <description>
+&lt;a href=&quot;Oakz.gif&quot;&gt;&lt;img src=&quot;OakZ.gif&quot; width=1000&gt;&lt;/a&gt;
+	&lt;p&gt;During the recent bank holiday weekend, Katy and I travelled with our bicycles and panniers on the train from Newcastle to Haltwhistle to stay at the &lt;a href=&quot;http://bushnook.co.uk/&quot;&gt;Bush Nook&lt;/a&gt; B&amp;B, just beyond &lt;a href=&quot;http://en.wikipedia.org/wiki/Gilsland&quot;&gt;Gilsland&lt;/a&gt;.  The B&amp;B was very near to &lt;a href=&quot;http://en.wikipedia.org/wiki/Hadrian&#039;s_Wall&quot;&gt;Hadrian&#039;s wall&lt;/a&gt; and lay just off &lt;a href=&quot;http://www.sustrans.org.uk/ncn/map/route/hadrians-cycleway&quot;&gt;Hadrian&#039;s cycleway&lt;/a&gt;.  The accomodation was very pleasant: amazing breakfasts, hot tub, gorgeous countryside, friendly folk and dogs.  The food at the nearby &lt;a href=&quot;http://www.thesamson.co.uk/&quot;&gt;Samson Inn&lt;/a&gt; is also very good.&lt;/p&gt;
+	
+	&lt;div style=&quot;font-size: 0;&quot;&gt;
+	&lt;a href=&quot;http://www.flickr.com/photos/conchur/9638747008/&quot; title=&quot;BushyNookMoon by Conor Lawless, on Flickr&quot;&gt;&lt;img src=&quot;http://farm6.staticflickr.com/5472/9638747008_06c81c4f4a.jpg&quot; width=&quot;500&quot; height=&quot;334&quot; alt=&quot;BushyNookMoon&quot;&gt;&lt;/a&gt;
+	&lt;a href=&quot;http://www.flickr.com/photos/conchur/9634674555/&quot; title=&quot;TiltingHelmet by Conor Lawless, on Flickr&quot;&gt;&lt;img src=&quot;http://farm4.staticflickr.com/3763/9634674555_19098afeaf.jpg&quot; width=&quot;500&quot; height=&quot;334&quot; alt=&quot;TiltingHelmet&quot;&gt;&lt;/a&gt;
+	&lt;/div&gt;
+ </description>
+ 
+ 
+ </item>
+
+
+ 
+ <item>
+  <title>Building consensus sequences</title>
+ <link>http://cnr.lwlss.net/SeqConsensus/</link>
+ <description>
+ &lt;h2&gt;Introduction&lt;/h2&gt;
+	
+	&lt;p&gt;In my &lt;a href=&quot;../seqCoverage&quot;&gt;last&lt;/a&gt; &lt;a href=&quot;../seqReads&quot;&gt;two&lt;/a&gt; posts I described aligning short reads (stored in &lt;a href=&quot;http://en.wikipedia.org/wiki/FASTQ_format&quot;&gt;.fastq&lt;/a&gt; format) produced by a sequencing machine against a reference sequence and visualising read-depth coverage along the genome.  In the final post in this series of three, I will briefly describe the next step in the resequencing workflow: generating a &lt;a href=&quot;http://en.wikipedia.org/wiki/Consensus_sequence&quot;&gt;consensus genomic sequences&lt;/a&gt; from read-alignment (&lt;a href=&quot;http://www.broadinstitute.org/igv/BAM&quot;&gt;.bam&lt;/a&gt; files, such as those generated in my &lt;a href=&quot;../seqCoverage&quot;&gt;last post&lt;/a&gt;).&lt;/p&gt;
+ </description>
+ 
+ 
+ </item>
+ 
+<item>
  <title>Extracting read coverage per base</title>
  <link>http://cnr.lwlss.net/seqCoverage</link>
  <description>
