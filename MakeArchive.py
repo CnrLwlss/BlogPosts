@@ -18,7 +18,7 @@ fullpath = os.path.abspath(syspath)
 dirlist=[]
 allfiles=os.listdir(fullpath)
 for filename in allfiles:
-    if "." not in filename and filename != "Archive":
+    if "." not in filename and filename not in ["Archive","jsLibs","AboutConor"]:
         dirlist.append(filename)
 
 urls=[]

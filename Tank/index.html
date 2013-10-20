@@ -9,7 +9,7 @@
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"></link>
 	<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
 	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-	<script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js"></script>
+	<script type="text/javascript" src="../jsLibs/D3/d3.v3.min.js"></script>
 </head>
 
 <body onload="drawPlot(1,1,1)">
@@ -31,8 +31,10 @@ The diagram and cross-section above show a horizontal tank of length $L$ and inn
 </p>
 
 <p>
-$\sin \theta=\frac{b}{R}\\
-\cos \theta=\frac{a}{R}$
+$\begin{align*}
+\sin \theta&=\frac{b}{R}\\
+\cos \theta&=\frac{a}{R}
+\end{align*}$
 </p>
 
 <p>
@@ -40,7 +42,7 @@ Eliminating $\theta$ we can write down an expression for $b$ in terms of $a$:
 </p>
 
 <p>
-$b=R\sin \arccos \frac{a}{R}$
+$ b=R\sin \arccos \frac{a}{R}$
 </p>
 
 <p>
@@ -48,7 +50,7 @@ The area between the upper curve in the rotated cross-section (excluding the are
 </p>
 
 <p>
-$A_{unfilled}=2\int_{-R}^{R-H}R\sin \arccos \frac{a}{R} \mathrm{d}a$
+$ A_{unfilled}=2\int_{-R}^{R-H}R\sin \arccos \frac{a}{R} \mathrm{d}a$
 </p>
 
 <p>
@@ -56,7 +58,7 @@ The integral above has an analytical solution.  Subtracting $A_{unfilled}$ from 
 </p>
 
 <p>
-$V_{filled}(H)=\frac{\pi R^2L}{2}-RL\left( (R-H)\sqrt{\frac{H(2R-H)}{R^2}}+R\arcsin \left(1-\frac{H}{R}\right) \right)$
+$ V_{filled}(H)=\frac{\pi R^2L}{2}-RL\left( (R-H)\sqrt{\frac{H(2R-H)}{R^2}}+R\arcsin \left(1-\frac{H}{R}\right) \right)$
 </p>
 
 <p>
