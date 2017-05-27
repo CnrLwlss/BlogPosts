@@ -8,6 +8,21 @@
 <link href="../CLstyle.css" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 </link></link></meta></head>
+
+<div id = "banner">
+<a href="http://cnr.lwlss.net">
+<div style="display:inline-block; align: center;vertical-align: middle;" >
+  <img src="../logo.png" style="height:150px; padding-right: 20px;">
+</div>
+<div style="display:inline-block;vertical-align: middle;">
+  <h1 style="margin-top:-10; margin-bottom:-10;">Conor Lawless</h1>
+  <h2 style="margin-top:-10; margin-bottom:-10;">Scientific Computing</h2>
+  <h3 style="margin-top:-10; margin-bottom:-10;">http://cnr.lwlss.net</h3>
+</div>
+</a>
+</div>
+
+
 <body><header><h1>Oscillations</h1><time datetime="2011-08-31T11:13:00Z">11:13 Wednesday 31st August 2011</time></header><article>Last week a colleague asked for advice on how to estimate the frequency and amplitude of an oscillating signal.  My initial response was to suggest reading the data into <a href="http://www.r-project.org/">R</a>, using the <a href="http://stat.ethz.ch/R-manual/R-devel/library/stats/html/spectrum.html">spectrum</a> function to estimate the spectral density of the time series, taking the maximum as a good initial guess for the frequency of oscillation and using that initial guess to fit a <a href="http://en.wikipedia.org/wiki/Sine_wave">sinusoid</a> model to the data by <a href="http://en.wikipedia.org/wiki/Least_squares">least squares</a>.  I suggested trying to fit the rather gruesome "monthly deaths from bronchitis, emphysema and asthma in the UK, 1974–1979" dataset <a href="http://stat.ethz.ch/R-manual/R-patched/library/datasets/html/UKLungDeaths.html">ldeaths</a> which is embedded in <a href="http://www.r-project.org/">R</a>, and referred to as an example in the <a href="http://stat.ethz.ch/R-manual/R-devel/library/stats/html/spectrum.html">spectrum</a> documentation.
 <br/>
 <br/>On reflection, I think that this was a terrible example to give, since the <a href="http://stat.ethz.ch/R-manual/R-patched/library/datasets/html/UKLungDeaths.html">ldeaths</a> time-series is nice and regular.  One thing I've learned from 10 years of working with biological data is that they are almost never regular or well-behaved.  Therefore analysing this dataset is likely to be misleading.  Many statistical tools assume regular datasets.

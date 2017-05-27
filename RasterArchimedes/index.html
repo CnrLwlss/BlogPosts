@@ -8,6 +8,21 @@
 <link href="../CLstyle.css" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 </link></link></meta></head>
+
+<div id = "banner">
+<a href="http://cnr.lwlss.net">
+<div style="display:inline-block; align: center;vertical-align: middle;" >
+  <img src="../logo.png" style="height:150px; padding-right: 20px;">
+</div>
+<div style="display:inline-block;vertical-align: middle;">
+  <h1 style="margin-top:-10; margin-bottom:-10;">Conor Lawless</h1>
+  <h2 style="margin-top:-10; margin-bottom:-10;">Scientific Computing</h2>
+  <h3 style="margin-top:-10; margin-bottom:-10;">http://cnr.lwlss.net</h3>
+</div>
+</a>
+</div>
+
+
 <body><header><h1>Rasterizing Archimedes Spirals</h1><time datetime="2009-11-14T23:19:00Z">23:19 Saturday 14th November 2009</time></header><article>Imagine you want a list of coordinates, following a spiral, on a discrete, regular grid.  I can think of several examples where this could be useful for digital image construction, where the regular grid corresponds to pixel coordinates (integer only).  It's easy to code up a square spiral like <a href="http://en.wikipedia.org/wiki/Ulam_spiral">Ulam's spiral</a>, since pixels are naturally arrayed on a rectangular grid, but using square spirals in image construction leaves obvious square corners.  A circular spiral can be smoother and better.  
 <br/>
 <br/>Let's look at the <a href="http://en.wikipedia.org/wiki/Archimedean_spiral">Archimedes spiral</a> in polar coordinates:

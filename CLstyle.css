@@ -21,8 +21,6 @@ p {
 a {	text-decoration:none;
 	}
 
-
-
 a:link {	color: black;
 		font-weight: 600; 
 		text-decoration: none;
@@ -33,10 +31,17 @@ a:visited {	color: black;
 		text-decoration: none;
 		border-bottom:0px dashed
 	}
-
+	
 a:hover{background: black;
 		color: white;
 		font-weight: 600;
+}
+
+#banner a:hover{
+  color: black;
+  background: white;
+  font-weight: 600; 
+  text-decoration: none;
 }
 
 h1 {
