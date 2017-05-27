@@ -75,17 +75,32 @@ headerString='''
 <!DOCTYPE doctype html>
 
 <html lang="en">
-<head><title>Archive (alphabetical order)</title>
+<head><title>Archive (date order)</title>
 <meta charset="utf-8">
 
 <meta content="" name="description"/>
 <link href="../CLstyle.css" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 </link></link></meta></head>
-<body><header><h1>Archive</h1></header>
+
+<div id = "banner">
+<a href="http://cnr.lwlss.net">
+<div style="display:inline-block; align: center;vertical-align: middle;" >
+  <img src="../logo.png" style="height:150px; padding-right: 20px;">
+</div>
+<div style="display:inline-block;vertical-align: middle;">
+  <h1 style="margin-top:-10; margin-bottom:-10;">Conor Lawless</h1>
+  <h2 style="margin-top:-10; margin-bottom:-10;">Scientific Computing</h2>
+  <h3 style="margin-top:-10; margin-bottom:-10;">http://cnr.lwlss.net</h3>
+</div>
+</a>
+</div>
+</br>
+
+<body><header><h2>Archive (date order)</h2></header>
 <article>
 
-<p>Articles sorted by title <a href="byname.html">here</a>.  Alternatively <a href="http://cnr.lwlss.net">go home</a>.</p>
+<p>Articles sorted by title <a href="byname.html">here</a>.  Alternatively go home to <a href="http://cnr.lwlss.net">http://cnr.lwlss.net</a>.</p>
 
 <ul>
 '''
@@ -134,10 +149,24 @@ headerString='''
 <link href="../CLstyle.css" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 </link></link></meta></head>
-<body><header><h1>Archive</h1></header>
+
+<div id = "banner">
+<a href="http://cnr.lwlss.net">
+<div style="display:inline-block; align: center;vertical-align: middle;" >
+  <img src="../logo.png" style="height:150px; padding-right: 20px;">
+</div>
+<div style="display:inline-block;vertical-align: middle;">
+  <h1 style="margin-top:-10; margin-bottom:-10;">Conor Lawless</h1>
+  <h2 style="margin-top:-10; margin-bottom:-10;">Scientific Computing</h2>
+  <h3 style="margin-top:-10; margin-bottom:-10;">http://cnr.lwlss.net</h3>
+</div>
+</a>
+</div>
+</br>
+<body><header><h2>Archive (alphabetical order)</h2></header>
 <article>
 
-<p>Articles sorted by date <a href="index.html">here</a>.  Alternatively <a href="http://cnr.lwlss.net">go home</a>.</p>
+<p>Articles sorted by date <a href="index.html">here</a>.  Alternatively go home to <a href="http://cnr.lwlss.net">http://cnr.lwlss.net</a>.</p>
 
 <ul>
 '''
